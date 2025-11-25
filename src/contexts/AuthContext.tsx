@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import bcrypt from 'bcryptjs';
 
 interface User {
   id: string;
@@ -32,23 +31,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   }, []);
 
+  // Simple hash function for passwords (SHA-256 equivalent using Web Crypto API)
+  const hashPassword = async (password: string): Promise<string> => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  };
+
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      // Fetch user from database
+      // Hash the password
+      const hashedPassword = await hashPassword(password);
+      
+      // Fetch user from database with hashed password
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('id, username, role, avatar_url, password_hash')
         .eq('username', username)
+        .eq('password_hash', hashedPassword)
         .single();
 
       if (userError || !userData) {
-        return false;
-      }
-
-      // Compare password with hashed password
-      const isPasswordValid = await bcrypt.compare(password, userData.password_hash);
-      
-      if (!isPasswordValid) {
         return false;
       }
 
