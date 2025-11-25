@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PlusCircle, Users, Key } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export const UserManagement = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -90,9 +91,12 @@ export const UserManagement = () => {
           <Card key={user.id} className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="bg-primary/10 p-3 rounded-full">
-                  <Users className="w-6 h-6 text-primary" />
-                </div>
+                <Avatar className="w-12 h-12 border-2 border-primary">
+                  <AvatarImage src={user.avatar_url} alt={user.username} />
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    {user.username.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
                 <div>
                   <h3 className="font-semibold text-lg">{user.username}</h3>
                   <p className="text-sm text-muted-foreground capitalize">{user.role}</p>
