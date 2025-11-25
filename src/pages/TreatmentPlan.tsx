@@ -18,6 +18,49 @@ const TreatmentPlan = () => {
   const totalDosageMin = product.dosage_min * acres;
   const totalDosageMax = product.dosage_max * acres;
 
+  // Calculate recommended pack size and number of packs
+  const calculatePackRecommendation = (totalDosage: number) => {
+    // Parse pack sizes to numbers (assuming format like "1L", "500ml", "250gm")
+    const packSizesNumeric = product.pack_sizes.map(size => {
+      const match = size.match(/(\d+(?:\.\d+)?)/);
+      const num = match ? parseFloat(match[1]) : 0;
+      // Convert to base unit (L or gm)
+      if (size.toLowerCase().includes('ml')) return num / 1000;
+      return num;
+    }).filter(size => size > 0);
+
+    if (packSizesNumeric.length === 0) return null;
+
+    // Find the optimal pack size (largest that requires 2+ packs or smallest if all are larger than total)
+    packSizesNumeric.sort((a, b) => b - a); // Sort descending
+    
+    let recommendedPackSize = packSizesNumeric[packSizesNumeric.length - 1]; // Default to smallest
+    for (const packSize of packSizesNumeric) {
+      if (totalDosage / packSize >= 1) {
+        recommendedPackSize = packSize;
+        break;
+      }
+    }
+
+    const packsNeeded = Math.ceil(totalDosage / recommendedPackSize);
+    
+    // Find the original pack size string
+    const recommendedPackString = product.pack_sizes.find(size => {
+      const match = size.match(/(\d+(?:\.\d+)?)/);
+      const num = match ? parseFloat(match[1]) : 0;
+      const converted = size.toLowerCase().includes('ml') ? num / 1000 : num;
+      return Math.abs(converted - recommendedPackSize) < 0.01;
+    }) || product.pack_sizes[0];
+
+    return {
+      packSize: recommendedPackString,
+      packsNeeded,
+      totalInPacks: (recommendedPackSize * packsNeeded).toFixed(2)
+    };
+  };
+
+  const packRecommendation = calculatePackRecommendation(totalDosageMax || totalDosageMin);
+
   useEffect(() => {
     // Track analytics when treatment plan is generated
     const trackAnalytics = async () => {
@@ -56,7 +99,7 @@ const TreatmentPlan = () => {
       // Header
       doc.setFontSize(24);
       doc.setTextColor(34, 139, 34);
-      doc.text('KisanSethu', 105, 20, { align: 'center' });
+      doc.text('Shanmukha Agritech', 105, 20, { align: 'center' });
       
       doc.setFontSize(16);
       doc.setTextColor(0, 0, 0);
@@ -92,14 +135,27 @@ const TreatmentPlan = () => {
       }
       y += 15;
       
-      doc.setFontSize(14);
-      doc.setTextColor(34, 139, 34);
-      doc.text('Pack Sizes Available', 20, y);
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-      y += 10;
-      doc.text(product.pack_sizes.join(', '), 20, y);
-      y += 15;
+      if (product.pack_sizes) {
+        doc.setFontSize(14);
+        doc.setTextColor(34, 139, 34);
+        doc.text('Pack Sizes Available', 20, y);
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        y += 10;
+        doc.text(product.pack_sizes.join(', '), 20, y);
+        y += 10;
+        
+        if (packRecommendation) {
+          doc.setTextColor(34, 139, 34);
+          doc.text('Recommended:', 20, y);
+          doc.setTextColor(0, 0, 0);
+          y += 8;
+          doc.text(`${packRecommendation.packsNeeded} pack(s) of ${packRecommendation.packSize}`, 20, y);
+          y += 8;
+          doc.text(`Total: ${packRecommendation.totalInPacks} ${product.dosage_unit}`, 20, y);
+        }
+        y += 15;
+      }
       
       if (product.spray_interval) {
         doc.setFontSize(14);
@@ -137,8 +193,12 @@ const TreatmentPlan = () => {
   };
 
   const handleShareWhatsApp = () => {
+    const packInfo = packRecommendation 
+      ? `\n*Recommended:* ${packRecommendation.packsNeeded} pack(s) of ${packRecommendation.packSize}\n(Total: ${packRecommendation.totalInPacks} ${product.dosage_unit})`
+      : '';
+    
     const message = `
-*KisanSethu Treatment Plan*
+*Shanmukha Agritech Treatment Plan*
 
 Crop: ${getCropName(crop)}
 Problem: ${getProblemTitle(problem)}
@@ -150,11 +210,11 @@ Acres: ${acres}
       ? `${totalDosageMin.toFixed(2)} ${product.dosage_unit}` 
       : `${totalDosageMin.toFixed(2)} - ${totalDosageMax.toFixed(2)} ${product.dosage_unit}`}
 
-*Pack Sizes:* ${product.pack_sizes.join(', ')}
+*Pack Sizes:* ${product.pack_sizes.join(', ')}${packInfo}
 ${product.spray_interval ? `*Spray Interval:* ${product.spray_interval}` : ''}
 ${product.safety_notes ? `*Safety:* ${product.safety_notes}` : ''}
 
-_Powered by Shanmukha Agro Industries_
+_Powered by Shanmukha Agritech_
     `.trim();
 
     const encodedMessage = encodeURIComponent(message);
@@ -222,6 +282,20 @@ _Powered by Shanmukha Agro Industries_
                       : `${totalDosageMin.toFixed(2)} - ${totalDosageMax.toFixed(2)} ${product.dosage_unit}`}
                   </p>
                 </div>
+
+                {packRecommendation && (
+                  <div className="bg-primary/10 p-6 rounded-lg mt-4 border-2 border-primary">
+                    <p className="text-sm font-semibold text-muted-foreground mb-2">
+                      {t('recommendedPack')}
+                    </p>
+                    <p className="text-2xl font-display font-bold text-primary mb-3">
+                      {packRecommendation.packsNeeded} {t('packsNeeded')} {packRecommendation.packSize}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Total: {packRecommendation.totalInPacks} {product.dosage_unit}
+                    </p>
+                  </div>
+                )}
 
                 <div className="mt-4 space-y-3">
                   <div>
