@@ -264,7 +264,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      ensure_auth_user: {
+        Args: { user_email: string; user_id: string; user_password: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "manager" | "guest"
