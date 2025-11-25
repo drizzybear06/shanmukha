@@ -13,6 +13,19 @@ const TreatmentPlan = () => {
   const { language, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Redirect if no state is present
+  useEffect(() => {
+    if (!location.state) {
+      navigate('/');
+    }
+  }, [location.state, navigate]);
+
+  // Return early if no state to prevent destructuring error
+  if (!location.state) {
+    return null;
+  }
+
   const { crop, problem, product, acres } = location.state as TreatmentData;
 
   const totalDosageMin = product.dosage_min * acres;
