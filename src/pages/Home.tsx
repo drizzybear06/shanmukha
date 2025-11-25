@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Sprout, FileText, LogIn, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import logo from '@/assets/shanmukha-logo.png';
 
 const Home = () => {
   const { t } = useLanguage();
@@ -12,13 +13,11 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10">
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
-        <div className="text-center mb-12 animate-fade-in">
+        <div className="text-center mb-12 animate-fade-in flex flex-col items-center">
+          <img src={logo} alt="Shanmukha Agritech Logo" className="w-24 h-24 mb-4" />
           <h1 className="text-5xl md:text-6xl font-display font-bold text-gradient-primary mb-3">
             {t('appTitle')}
           </h1>
-          <p className="text-2xl md:text-3xl text-muted-foreground font-medium">
-            {t('appSubtitle')}
-          </p>
         </div>
 
         {/* Main Actions */}
@@ -42,7 +41,7 @@ const Home = () => {
 
           <Card 
             className="p-8 hover:shadow-agricultural transition-all duration-300 cursor-pointer border-2 hover:border-accent"
-            onClick={() => window.open('https://shanmukhaagro.com', '_blank')}
+            onClick={() => navigate('/about')}
           >
             <div className="flex items-center gap-6">
               <div className="bg-accent/10 p-6 rounded-2xl">
