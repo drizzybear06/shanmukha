@@ -33,25 +33,53 @@ const TreatmentPlan = () => {
 
   // Calculate recommended pack size and number of packs with smart algorithm
   const calculatePackRecommendation = (totalDosage: number) => {
-    // Parse pack sizes to numbers (assuming format like "1L", "500ml", "250gm")
+    // Parse pack sizes to numbers and convert to same unit as dosage
     const packSizesWithInfo = product.pack_sizes.map(size => {
       const match = size.match(/(\d+(?:\.\d+)?)/);
       const num = match ? parseFloat(match[1]) : 0;
-      // Convert to base unit (L or gm/kg)
+      
+      // Determine the unit and convert to the same unit as product.dosage_unit
       let converted = num;
-      if (size.toLowerCase().includes('ml')) {
-        converted = num / 1000;
-      } else if (size.toLowerCase().includes('gm') || size.toLowerCase().includes('g')) {
-        converted = num;
-      } else if (size.toLowerCase().includes('kg')) {
-        converted = num * 1000;
+      const sizeUnit = size.toLowerCase();
+      const productUnit = product.dosage_unit.toLowerCase();
+      
+      // Convert pack size to match product dosage unit
+      if (productUnit.includes('l') || productUnit === 'litre' || productUnit === 'liter') {
+        // Product unit is in liters
+        if (sizeUnit.includes('ml')) {
+          converted = num / 1000; // ml to L
+        } else if (sizeUnit.includes('l')) {
+          converted = num; // already in L
+        }
+      } else if (productUnit.includes('ml')) {
+        // Product unit is in ml
+        if (sizeUnit.includes('ml')) {
+          converted = num; // already in ml
+        } else if (sizeUnit.includes('l')) {
+          converted = num * 1000; // L to ml
+        }
+      } else if (productUnit.includes('kg')) {
+        // Product unit is in kg
+        if (sizeUnit.includes('gm') || sizeUnit.includes('g ')) {
+          converted = num / 1000; // gm to kg
+        } else if (sizeUnit.includes('kg')) {
+          converted = num; // already in kg
+        }
+      } else {
+        // Product unit is in gm/g
+        if (sizeUnit.includes('gm') || sizeUnit.includes('g ')) {
+          converted = num; // already in gm
+        } else if (sizeUnit.includes('kg')) {
+          converted = num * 1000; // kg to gm
+        }
       }
+      
       return { original: size, value: converted };
     }).filter(p => p.value > 0).sort((a, b) => b.value - a.value); // Sort descending by size
 
     if (packSizesWithInfo.length === 0) return null;
 
-    // Strategy: Find the combination that minimizes waste while using fewest packs
+    // Strategy: Find the pack size that minimizes waste while using fewest packs
     let bestOption = null;
     let minWastePercentage = Infinity;
 
@@ -63,7 +91,6 @@ const TreatmentPlan = () => {
       const wastePercentage = (waste / totalDosage) * 100;
 
       // Prefer options with less waste, but also consider number of packs
-      // If waste is similar, prefer fewer packs (larger pack sizes)
       if (wastePercentage < minWastePercentage || 
           (Math.abs(wastePercentage - minWastePercentage) < 5 && packsNeeded < (bestOption?.packsNeeded || Infinity))) {
         minWastePercentage = wastePercentage;
@@ -310,7 +337,7 @@ _Powered by Shanmukha Agritech_
                       {t('recommendedPack')}
                     </p>
                     <p className="text-2xl font-display font-bold text-primary mb-3">
-                      {packRecommendation.packsNeeded} {t('packsNeeded')} {packRecommendation.packSize}
+                      {packRecommendation.packsNeeded} pack{packRecommendation.packsNeeded > 1 ? 's' : ''} of {packRecommendation.packSize}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Total: {packRecommendation.totalInPacks} {product.dosage_unit}

@@ -25,10 +25,10 @@ const About = () => {
           {/* Header */}
           <div className="text-center mb-12 animate-fade-in">
             <img src={logo} alt="Shanmukha Agritech Logo" className="w-32 h-32 mx-auto mb-6" />
-            <h1 className="text-5xl md:text-6xl font-display font-bold text-gradient-primary mb-4">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold text-gradient-primary mb-4 break-words px-4">
               Shanmukha Agritech
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
               Leading the way in agricultural innovation and farmer support since our inception
             </p>
           </div>
