@@ -4,6 +4,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -11,6 +13,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 export const SubmissionApprovals = () => {
   const { user } = useAuth();
   const [submissions, setSubmissions] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
     fetchSubmissions();
@@ -93,6 +98,15 @@ export const SubmissionApprovals = () => {
     }
   };
 
+  const filteredSubmissions = submissions.filter(sub => {
+    const payload = JSON.stringify(sub.payload_json).toLowerCase();
+    const matchesSearch = payload.includes(searchTerm.toLowerCase()) ||
+                         sub.users?.username.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === 'all' || sub.type === filterType;
+    const matchesStatus = filterStatus === 'all' || sub.status === filterStatus;
+    return matchesSearch && matchesType && matchesStatus;
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -120,14 +134,40 @@ export const SubmissionApprovals = () => {
           </AlertDialog>
         )}
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Input
+          placeholder="Search submissions..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Select value={filterType} onValueChange={setFilterType}>
+          <SelectTrigger><SelectValue placeholder="Filter by type" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="crop">Crop</SelectItem>
+            <SelectItem value="problem">Problem</SelectItem>
+            <SelectItem value="product">Product</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <SelectTrigger><SelectValue placeholder="Filter by status" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="approved">Approved</SelectItem>
+            <SelectItem value="rejected">Rejected</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       
-      {submissions.length === 0 ? (
+      {filteredSubmissions.length === 0 ? (
         <Card className="p-8 text-center">
           <p className="text-muted-foreground">No submissions found</p>
         </Card>
       ) : (
         <div className="space-y-4">
-          {submissions.map((sub) => (
+          {filteredSubmissions.map((sub) => (
           <Card key={sub.id} className="p-6">
             <div className="flex items-start justify-between">
               <div className="flex-1">

@@ -15,6 +15,9 @@ export const ProductManagement = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [problems, setProblems] = useState<any[]>([]);
   const [crops, setCrops] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCrop, setFilterCrop] = useState('all');
+  const [filterProblem, setFilterProblem] = useState('all');
   const [showDialog, setShowDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -111,6 +114,14 @@ export const ProductManagement = () => {
     setEditingProduct(null);
   };
 
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.dosage_recommendation.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCrop = filterCrop === 'all' || product.crop_id === filterCrop;
+    const matchesProblem = filterProblem === 'all' || product.problem_id === filterProblem;
+    return matchesSearch && matchesCrop && matchesProblem;
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -121,8 +132,30 @@ export const ProductManagement = () => {
         </Button>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <Input
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Select value={filterCrop} onValueChange={setFilterCrop}>
+          <SelectTrigger><SelectValue placeholder="Filter by crop" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Crops</SelectItem>
+            {crops.map(c => <SelectItem key={c.id} value={c.id}>{c.name_en}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={filterProblem} onValueChange={setFilterProblem}>
+          <SelectTrigger><SelectValue placeholder="Filter by problem" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Problems</SelectItem>
+            {problems.map(p => <SelectItem key={p.id} value={p.id}>{p.title_en}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="grid gap-4">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <Card key={product.id} className="p-4">
             <div className="flex items-start gap-4">
               {product.image_url ? (

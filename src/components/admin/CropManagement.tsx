@@ -19,6 +19,7 @@ export const CropManagement = () => {
   const { user } = useAuth();
   const [crops, setCrops] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showDialog, setShowDialog] = useState(false);
   const [editingCrop, setEditingCrop] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -122,6 +123,12 @@ export const CropManagement = () => {
     setShowDialog(true);
   };
 
+  const filteredCrops = crops.filter(crop => 
+    crop.name_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    crop.name_te.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    crop.name_hi.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -132,8 +139,15 @@ export const CropManagement = () => {
         </Button>
       </div>
 
+      <Input
+        placeholder="Search crops..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mb-4"
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {crops.map((crop) => (
+        {filteredCrops.map((crop) => (
           <Card key={crop.id} className="p-4">
             <div className="flex items-start gap-4">
               {crop.image_url ? (

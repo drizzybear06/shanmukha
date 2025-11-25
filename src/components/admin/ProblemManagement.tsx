@@ -13,6 +13,8 @@ import { ImageUploadWithCrop } from '@/components/ImageUploadWithCrop';
 export const ProblemManagement = () => {
   const [problems, setProblems] = useState<any[]>([]);
   const [crops, setCrops] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCrop, setFilterCrop] = useState('all');
   const [showDialog, setShowDialog] = useState(false);
   const [editingProblem, setEditingProblem] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -110,6 +112,14 @@ export const ProblemManagement = () => {
     }
   };
 
+  const filteredProblems = problems.filter(problem => {
+    const matchesSearch = problem.title_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         problem.title_te.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         problem.title_hi.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCrop = filterCrop === 'all' || problem.crop_id === filterCrop;
+    return matchesSearch && matchesCrop;
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -120,8 +130,23 @@ export const ProblemManagement = () => {
         </Button>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <Input
+          placeholder="Search problems..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Select value={filterCrop} onValueChange={setFilterCrop}>
+          <SelectTrigger><SelectValue placeholder="Filter by crop" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Crops</SelectItem>
+            {crops.map(c => <SelectItem key={c.id} value={c.id}>{c.name_en}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {problems.map((problem) => (
+        {filteredProblems.map((problem) => (
           <Card key={problem.id} className="p-4">
             <div className="flex items-start gap-4">
               {problem.image_url ? (
