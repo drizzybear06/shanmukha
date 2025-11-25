@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import bcrypt from 'bcryptjs';
 
 interface User {
   id: string;
   username: string;
   role: 'admin' | 'manager' | 'guest';
+  avatar_url?: string;
 }
 
 interface AuthContextType {
@@ -13,6 +13,7 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   loading: boolean;
+  updateAvatar: (avatarUrl: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,41 +23,90 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in (from localStorage)
-    const savedUser = localStorage.getItem('kisansethu_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    checkUser();
   }, []);
+
+  const checkUser = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (userData) {
+          setUser({
+            id: userData.id,
+            username: userData.username,
+            role: userData.role,
+            avatar_url: userData.avatar_url
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Check user error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      const { data, error } = await supabase
+      // First check if user exists in custom users table
+      const { data: userData, error: userError } = await supabase
         .from('users')
         .select('*')
         .eq('username', username)
         .single();
 
-      if (error || !data) {
+      if (userError || !userData) {
         return false;
       }
 
-      // Verify password
-      const isValid = await bcrypt.compare(password, data.password_hash);
+      // Verify password using database function
+      const { data: verifyData, error: verifyError } = await supabase.rpc('verify_user_password', {
+        p_username: username,
+        p_password: password
+      });
+
+      if (verifyError || !verifyData) {
+        return false;
+      }
+
+      // Sign in with Supabase Auth using the user's ID as email
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: `${userData.id}@kisansethu.local`,
+        password: userData.id // Use ID as password
+      });
+
+      if (signInError) {
+        // User doesn't exist in auth.users, create them
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: `${userData.id}@kisansethu.local`,
+          password: userData.id,
+          options: {
+            data: {
+              username: userData.username,
+              role: userData.role,
+              avatar_url: userData.avatar_url
+            }
+          }
+        });
+
+        if (signUpError) {
+          return false;
+        }
+      }
+
+      setUser({
+        id: userData.id,
+        username: userData.username,
+        role: userData.role,
+        avatar_url: userData.avatar_url
+      });
       
-      if (!isValid) {
-        return false;
-      }
-
-      const userData: User = {
-        id: data.id,
-        username: data.username,
-        role: data.role as 'admin' | 'manager' | 'guest',
-      };
-
-      setUser(userData);
-      localStorage.setItem('kisansethu_user', JSON.stringify(userData));
       return true;
     } catch (error) {
       console.error('Login error:', error);
@@ -64,13 +114,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem('kisansethu_user');
+  };
+
+  const updateAvatar = async (avatarUrl: string) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('users')
+      .update({ avatar_url: avatarUrl })
+      .eq('id', user.id);
+    
+    if (!error) {
+      setUser({ ...user, avatar_url: avatarUrl });
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, updateAvatar }}>
       {children}
     </AuthContext.Provider>
   );
