@@ -19,7 +19,7 @@ export const SubmissionApprovals = () => {
     try {
       const { data, error } = await supabase
         .from('submissions')
-        .select('*, users(username)')
+        .select('*, users!submissions_manager_id_fkey(username)')
         .order('created_at', { ascending: false });
       
       if (error) {
