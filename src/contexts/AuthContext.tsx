@@ -11,7 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (username: string, password: string) => Promise<boolean>;
-  logout: () => Promise<void>;
+  logout: () => void;
   loading: boolean;
   updateAvatar: (avatarUrl: string) => Promise<void>;
 }
@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      // First verify credentials from public.users table
+      // Check user credentials directly from database
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('id, username, role, avatar_url, password_hash')
@@ -42,17 +42,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (userError || !userData) {
-        return false;
-      }
-
-      // Sign in to Supabase Auth to create proper session for RLS
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email: `${username}@kisansethu.local`,
-        password: password,
-      });
-
-      if (authError) {
-        console.error('Auth sign in error:', authError);
         return false;
       }
 
@@ -72,8 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = async () => {
-    await supabase.auth.signOut();
+  const logout = () => {
     setUser(null);
     localStorage.removeItem('kisansethu_user');
   };

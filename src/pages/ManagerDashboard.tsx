@@ -15,8 +15,8 @@ const ManagerDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('submissions');
 
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = () => {
+    logout();
     navigate('/');
   };
 
