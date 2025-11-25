@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
-import { BarChart3, TrendingUp, Globe, Package } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BarChart3, TrendingUp, Globe, Package, RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const AnalyticsDashboard = () => {
   const [stats, setStats] = useState({
@@ -17,9 +19,23 @@ export const AnalyticsDashboard = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const { data: analytics } = await supabase.from('analytics').select('*');
+      const { data: analytics, error } = await supabase.from('analytics').select('*');
       
-      if (!analytics) return;
+      if (error) {
+        console.error('Analytics fetch error:', error);
+        toast.error('Failed to load analytics');
+        return;
+      }
+
+      if (!analytics || analytics.length === 0) {
+        setStats({
+          totalDiagnoses: 0,
+          languageBreakdown: {},
+          topProducts: [],
+          topCrops: [],
+        });
+        return;
+      }
 
       const languageBreakdown = analytics.reduce((acc: any, curr) => {
         acc[curr.language] = (acc[curr.language] || 0) + 1;
@@ -65,14 +81,22 @@ export const AnalyticsDashboard = () => {
         topProducts,
         topCrops,
       });
+      toast.success('Analytics loaded');
     } catch (error) {
       console.error('Analytics error:', error);
+      toast.error('Failed to load analytics');
     }
   };
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-display font-bold">Analytics Dashboard</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-display font-bold">Analytics Dashboard</h2>
+        <Button onClick={fetchAnalytics} variant="outline">
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Refresh
+        </Button>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-6">
@@ -113,12 +137,16 @@ export const AnalyticsDashboard = () => {
             <h3 className="font-semibold text-lg">Top Products</h3>
           </div>
           <div className="space-y-2">
-            {stats.topProducts.map((product, idx) => (
-              <div key={idx} className="flex justify-between items-center p-2 bg-secondary/50 rounded">
-                <span className="font-medium">{product.name}</span>
-                <span className="text-sm text-muted-foreground">{product.count} uses</span>
-              </div>
-            ))}
+            {stats.topProducts.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No product data yet</p>
+            ) : (
+              stats.topProducts.map((product, idx) => (
+                <div key={idx} className="flex justify-between items-center p-2 bg-secondary/50 rounded">
+                  <span className="font-medium">{product.name}</span>
+                  <span className="text-sm text-muted-foreground">{product.count} uses</span>
+                </div>
+              ))
+            )}
           </div>
         </Card>
 
@@ -128,12 +156,16 @@ export const AnalyticsDashboard = () => {
             <h3 className="font-semibold text-lg">Top Crops</h3>
           </div>
           <div className="space-y-2">
-            {stats.topCrops.map((crop, idx) => (
-              <div key={idx} className="flex justify-between items-center p-2 bg-secondary/50 rounded">
-                <span className="font-medium">{crop.name}</span>
-                <span className="text-sm text-muted-foreground">{crop.count} diagnoses</span>
-              </div>
-            ))}
+            {stats.topCrops.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No crop data yet</p>
+            ) : (
+              stats.topCrops.map((crop, idx) => (
+                <div key={idx} className="flex justify-between items-center p-2 bg-secondary/50 rounded">
+                  <span className="font-medium">{crop.name}</span>
+                  <span className="text-sm text-muted-foreground">{crop.count} diagnoses</span>
+                </div>
+              ))
+            )}
           </div>
         </Card>
       </div>

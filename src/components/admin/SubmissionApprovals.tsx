@@ -3,9 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 export const SubmissionApprovals = () => {
   const { user } = useAuth();
@@ -72,9 +73,53 @@ export const SubmissionApprovals = () => {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      await supabase.from('submissions').delete().eq('id', id);
+      toast.success('Submission deleted');
+      fetchSubmissions();
+    } catch (error) {
+      toast.error('Failed to delete');
+    }
+  };
+
+  const handleClearAll = async () => {
+    try {
+      await supabase.from('submissions').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      toast.success('All submissions cleared');
+      fetchSubmissions();
+    } catch (error) {
+      toast.error('Failed to clear submissions');
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-display font-bold">Submission Approvals</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-display font-bold">Submission Approvals</h2>
+        {submissions.length > 0 && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">
+                <Trash2 className="w-4 h-4 mr-2" />
+                Clear All
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Clear All Submissions?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete all submissions. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleClearAll}>Clear All</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </div>
       
       {submissions.length === 0 ? (
         <Card className="p-8 text-center">
@@ -102,18 +147,39 @@ export const SubmissionApprovals = () => {
                 </div>
               </div>
               
-              {sub.status === 'pending' && (
-                <div className="flex gap-2 ml-4">
-                  <Button size="sm" onClick={() => handleApprove(sub)}>
-                    <CheckCircle className="w-4 h-4 mr-1" />
-                    Approve
-                  </Button>
-                  <Button size="sm" variant="destructive" onClick={() => handleReject(sub.id)}>
-                    <XCircle className="w-4 h-4 mr-1" />
-                    Reject
-                  </Button>
-                </div>
-              )}
+              <div className="flex gap-2 ml-4">
+                {sub.status === 'pending' && (
+                  <>
+                    <Button size="sm" onClick={() => handleApprove(sub)}>
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Approve
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => handleReject(sub.id)}>
+                      <XCircle className="w-4 h-4 mr-1" />
+                      Reject
+                    </Button>
+                  </>
+                )}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant="outline">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Submission?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete this submission. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(sub.id)}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           </Card>
         ))}
