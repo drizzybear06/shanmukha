@@ -31,45 +31,61 @@ const TreatmentPlan = () => {
   const totalDosageMin = product.dosage_min * acres;
   const totalDosageMax = product.dosage_max * acres;
 
-  // Calculate recommended pack size and number of packs
+  // Calculate recommended pack size and number of packs with smart algorithm
   const calculatePackRecommendation = (totalDosage: number) => {
     // Parse pack sizes to numbers (assuming format like "1L", "500ml", "250gm")
-    const packSizesNumeric = product.pack_sizes.map(size => {
+    const packSizesWithInfo = product.pack_sizes.map(size => {
       const match = size.match(/(\d+(?:\.\d+)?)/);
       const num = match ? parseFloat(match[1]) : 0;
       // Convert to base unit (L or gm)
-      if (size.toLowerCase().includes('ml')) return num / 1000;
-      return num;
-    }).filter(size => size > 0);
+      const converted = size.toLowerCase().includes('ml') ? num / 1000 : num;
+      return { original: size, value: converted };
+    }).filter(p => p.value > 0);
 
-    if (packSizesNumeric.length === 0) return null;
+    if (packSizesWithInfo.length === 0) return null;
 
-    // Find the optimal pack size (largest that requires 2+ packs or smallest if all are larger than total)
-    packSizesNumeric.sort((a, b) => b - a); // Sort descending
-    
-    let recommendedPackSize = packSizesNumeric[packSizesNumeric.length - 1]; // Default to smallest
-    for (const packSize of packSizesNumeric) {
-      if (totalDosage / packSize >= 1) {
-        recommendedPackSize = packSize;
-        break;
+    // Sort by size ascending
+    packSizesWithInfo.sort((a, b) => a.value - b.value);
+
+    // Find the best combination that minimizes waste and number of packs
+    let bestOption = null;
+    let minWaste = Infinity;
+
+    for (const pack of packSizesWithInfo) {
+      const packsNeeded = Math.ceil(totalDosage / pack.value);
+      const totalProvided = pack.value * packsNeeded;
+      const waste = totalProvided - totalDosage;
+      const wastePercentage = (waste / totalDosage) * 100;
+
+      // Prefer options with less than 20% waste, or exact matches
+      if (wastePercentage < 20 || waste < minWaste) {
+        if (waste < minWaste || (waste === minWaste && packsNeeded < (bestOption?.packsNeeded || Infinity))) {
+          minWaste = waste;
+          bestOption = {
+            packSize: pack.original,
+            packValue: pack.value,
+            packsNeeded,
+            totalInPacks: totalProvided.toFixed(2),
+            waste: waste.toFixed(2)
+          };
+        }
       }
     }
 
-    const packsNeeded = Math.ceil(totalDosage / recommendedPackSize);
-    
-    // Find the original pack size string
-    const recommendedPackString = product.pack_sizes.find(size => {
-      const match = size.match(/(\d+(?:\.\d+)?)/);
-      const num = match ? parseFloat(match[1]) : 0;
-      const converted = size.toLowerCase().includes('ml') ? num / 1000 : num;
-      return Math.abs(converted - recommendedPackSize) < 0.01;
-    }) || product.pack_sizes[0];
+    // If no good option found (all have >20% waste), pick the largest pack
+    if (!bestOption) {
+      const largestPack = packSizesWithInfo[packSizesWithInfo.length - 1];
+      const packsNeeded = Math.ceil(totalDosage / largestPack.value);
+      bestOption = {
+        packSize: largestPack.original,
+        packValue: largestPack.value,
+        packsNeeded,
+        totalInPacks: (largestPack.value * packsNeeded).toFixed(2),
+        waste: ((largestPack.value * packsNeeded) - totalDosage).toFixed(2)
+      };
+    }
 
-    return {
-      packSize: recommendedPackString,
-      packsNeeded,
-      totalInPacks: (recommendedPackSize * packsNeeded).toFixed(2)
-    };
+    return bestOption;
   };
 
   const packRecommendation = calculatePackRecommendation(totalDosageMax || totalDosageMin);
