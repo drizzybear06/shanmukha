@@ -17,12 +17,20 @@ export const SubmissionApprovals = () => {
 
   const fetchSubmissions = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('submissions')
         .select('*, users(username)')
         .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching submissions:', error);
+        toast.error('Failed to load submissions');
+        return;
+      }
+      
       setSubmissions(data || []);
     } catch (error) {
+      console.error('Fetch error:', error);
       toast.error('Failed to load submissions');
     }
   };
@@ -68,8 +76,13 @@ export const SubmissionApprovals = () => {
     <div className="space-y-6">
       <h2 className="text-2xl font-display font-bold">Submission Approvals</h2>
       
-      <div className="space-y-4">
-        {submissions.map((sub) => (
+      {submissions.length === 0 ? (
+        <Card className="p-8 text-center">
+          <p className="text-muted-foreground">No submissions found</p>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {submissions.map((sub) => (
           <Card key={sub.id} className="p-6">
             <div className="flex items-start justify-between">
               <div className="flex-1">
@@ -104,7 +117,8 @@ export const SubmissionApprovals = () => {
             </div>
           </Card>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
