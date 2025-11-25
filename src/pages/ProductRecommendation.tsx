@@ -35,6 +35,7 @@ const ProductRecommendation = () => {
         const { data, error } = await supabase
           .from('products')
           .select('*')
+          .eq('crop_id', crop?.id)
           .eq('problem_id', problemId);
 
         if (error) throw error;
@@ -47,8 +48,10 @@ const ProductRecommendation = () => {
       }
     };
 
-    fetchProducts();
-  }, [problemId]);
+    if (crop?.id && problemId) {
+      fetchProducts();
+    }
+  }, [problemId, crop?.id]);
 
   const handleProductSelect = (product: Product) => {
     setSelectedProduct(product);

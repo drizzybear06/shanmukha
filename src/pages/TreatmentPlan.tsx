@@ -150,25 +150,6 @@ const TreatmentPlan = () => {
 
   const packRecommendation = calculatePackRecommendation(totalDosageMax || totalDosageMin);
 
-  useEffect(() => {
-    // Track analytics when treatment plan is generated
-    const trackAnalytics = async () => {
-      try {
-        await supabase.from('analytics').insert({
-          crop_id: crop.id,
-          problem_id: problem.id,
-          product_id: product.id,
-          acres: acres,
-          language: language,
-        });
-      } catch (error) {
-        console.error('Analytics tracking error:', error);
-      }
-    };
-
-    trackAnalytics();
-  }, [crop.id, problem.id, product.id, acres, language]);
-
   const getCropName = (crop: any) => {
     if (language === 'te') return crop.name_te;
     if (language === 'hi') return crop.name_hi;

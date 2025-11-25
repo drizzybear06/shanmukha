@@ -134,6 +134,7 @@ export type Database = {
       products: {
         Row: {
           created_at: string | null
+          crop_id: string | null
           dosage_max: number
           dosage_min: number
           dosage_recommendation: string
@@ -148,6 +149,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          crop_id?: string | null
           dosage_max: number
           dosage_min: number
           dosage_recommendation: string
@@ -162,6 +164,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          crop_id?: string | null
           dosage_max?: number
           dosage_min?: number
           dosage_recommendation?: string
@@ -175,6 +178,13 @@ export type Database = {
           spray_interval?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "products_crop_id_fkey"
+            columns: ["crop_id"]
+            isOneToOne: false
+            referencedRelation: "crops"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "products_problem_id_fkey"
             columns: ["problem_id"]

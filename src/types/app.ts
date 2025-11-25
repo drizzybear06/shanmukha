@@ -17,6 +17,7 @@ export interface Problem {
 
 export interface Product {
   id: string;
+  crop_id: string;
   problem_id: string;
   name: string;
   dosage_recommendation: string;

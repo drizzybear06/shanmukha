@@ -14,9 +14,11 @@ import { ImageUploadWithCrop } from '@/components/ImageUploadWithCrop';
 export const ProductManagement = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [problems, setProblems] = useState<any[]>([]);
+  const [crops, setCrops] = useState<any[]>([]);
   const [showDialog, setShowDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [formData, setFormData] = useState({
+    crop_id: '',
     problem_id: '',
     name: '',
     dosage_recommendation: '',
@@ -36,13 +38,15 @@ export const ProductManagement = () => {
 
   const fetchData = async () => {
     try {
-      const [productsRes, problemsRes] = await Promise.all([
-        supabase.from('products').select('*, problems(title_en)'),
+      const [productsRes, problemsRes, cropsRes] = await Promise.all([
+        supabase.from('products').select('*, problems(title_en), crops(name_en)'),
         supabase.from('problems').select('*'),
+        supabase.from('crops').select('*'),
       ]);
       
       setProducts(productsRes.data || []);
       setProblems(problemsRes.data || []);
+      setCrops(cropsRes.data || []);
     } catch (error) {
       toast.error('Failed to load data');
     }
@@ -99,7 +103,7 @@ export const ProductManagement = () => {
 
   const resetForm = () => {
     setFormData({
-      problem_id: '', name: '', dosage_recommendation: '',
+      crop_id: '', problem_id: '', name: '', dosage_recommendation: '',
       dosage_min: '', dosage_max: '', dosage_unit: 'ml',
       pack_sizes: '', spray_interval: '', safety_notes: '', image_url: '',
     });
@@ -129,7 +133,7 @@ export const ProductManagement = () => {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground">{product.problems?.title_en}</p>
+                <p className="text-xs text-muted-foreground">{product.crops?.name_en} - {product.problems?.title_en}</p>
                 <h3 className="font-bold text-lg truncate">{product.name}</h3>
                 <p className="text-sm truncate">{product.dosage_recommendation}</p>
                 <p className="text-xs text-muted-foreground mt-1 truncate">
@@ -140,6 +144,7 @@ export const ProductManagement = () => {
                 <Button size="sm" variant="outline" onClick={() => {
                   setEditingProduct(product);
                   setFormData({
+                    crop_id: product.crop_id,
                     problem_id: product.problem_id,
                     name: product.name,
                     dosage_recommendation: product.dosage_recommendation,
@@ -182,11 +187,20 @@ export const ProductManagement = () => {
               currentImage={formData.image_url}
             />
             <div>
+              <Label>Crop</Label>
+              <Select value={formData.crop_id} onValueChange={(val) => setFormData({ ...formData, crop_id: val })}>
+                <SelectTrigger><SelectValue placeholder="Select crop" /></SelectTrigger>
+                <SelectContent>
+                  {crops.map((c) => <SelectItem key={c.id} value={c.id}>{c.name_en}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <Label>Problem</Label>
               <Select value={formData.problem_id} onValueChange={(val) => setFormData({ ...formData, problem_id: val })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Select problem" /></SelectTrigger>
                 <SelectContent>
-                  {problems.map((p) => <SelectItem key={p.id} value={p.id}>{p.title_en}</SelectItem>)}
+                  {problems.filter(p => !formData.crop_id || p.crop_id === formData.crop_id).map((p) => <SelectItem key={p.id} value={p.id}>{p.title_en}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
