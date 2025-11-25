@@ -9,12 +9,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
+import { ImageUploadWithCrop } from '@/components/ImageUploadWithCrop';
 
 export const ProposalForm = () => {
   const { user } = useAuth();
   const [crops, setCrops] = useState<any[]>([]);
   const [problems, setProblems] = useState<any[]>([]);
   const [selectedCropForProduct, setSelectedCropForProduct] = useState<string>('');
+  const [cropImageFile, setCropImageFile] = useState<File | null>(null);
+  const [problemImageFile, setProblemImageFile] = useState<File | null>(null);
+  const [productImageFile, setProductImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -34,6 +38,26 @@ export const ProposalForm = () => {
     const formData = new FormData(e.currentTarget);
     
     try {
+      let imageUrl = '';
+      
+      if (cropImageFile) {
+        const fileExt = cropImageFile.name.split('.').pop();
+        const fileName = `crop-${Date.now()}.${fileExt}`;
+        const filePath = `crops/${fileName}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(filePath, cropImageFile);
+        
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('images')
+          .getPublicUrl(filePath);
+        
+        imageUrl = publicUrl;
+      }
+
       await supabase.from('submissions').insert([{
         manager_id: user?.id,
         type: 'crop',
@@ -41,11 +65,13 @@ export const ProposalForm = () => {
           name_en: formData.get('name_en') as string,
           name_te: formData.get('name_te') as string,
           name_hi: formData.get('name_hi') as string,
+          image_url: imageUrl,
         },
       }]);
       
       toast.success('Crop proposal submitted!');
       e.currentTarget.reset();
+      setCropImageFile(null);
     } catch (error) {
       toast.error('Failed to submit');
     }
@@ -56,6 +82,26 @@ export const ProposalForm = () => {
     const formData = new FormData(e.currentTarget);
     
     try {
+      let imageUrl = '';
+      
+      if (problemImageFile) {
+        const fileExt = problemImageFile.name.split('.').pop();
+        const fileName = `problem-${Date.now()}.${fileExt}`;
+        const filePath = `problems/${fileName}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(filePath, problemImageFile);
+        
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('images')
+          .getPublicUrl(filePath);
+        
+        imageUrl = publicUrl;
+      }
+
       await supabase.from('submissions').insert([{
         manager_id: user?.id,
         type: 'problem',
@@ -64,11 +110,13 @@ export const ProposalForm = () => {
           title_en: formData.get('title_en') as string,
           title_te: formData.get('title_te') as string,
           title_hi: formData.get('title_hi') as string,
+          image_url: imageUrl,
         },
       }]);
       
       toast.success('Problem proposal submitted!');
       e.currentTarget.reset();
+      setProblemImageFile(null);
     } catch (error) {
       toast.error('Failed to submit');
     }
@@ -79,6 +127,26 @@ export const ProposalForm = () => {
     const formData = new FormData(e.currentTarget);
     
     try {
+      let imageUrl = '';
+      
+      if (productImageFile) {
+        const fileExt = productImageFile.name.split('.').pop();
+        const fileName = `product-${Date.now()}.${fileExt}`;
+        const filePath = `products/${fileName}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(filePath, productImageFile);
+        
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('images')
+          .getPublicUrl(filePath);
+        
+        imageUrl = publicUrl;
+      }
+
       await supabase.from('submissions').insert([{
         manager_id: user?.id,
         type: 'product',
@@ -93,12 +161,14 @@ export const ProposalForm = () => {
           pack_sizes: (formData.get('pack_sizes') as string).split(',').map(s => s.trim()),
           spray_interval: formData.get('spray_interval') as string,
           safety_notes: formData.get('safety_notes') as string,
+          image_url: imageUrl,
         },
       }]);
       
       toast.success('Product proposal submitted!');
       e.currentTarget.reset();
       setSelectedCropForProduct('');
+      setProductImageFile(null);
     } catch (error) {
       toast.error('Failed to submit');
     }
@@ -117,6 +187,11 @@ export const ProposalForm = () => {
 
         <TabsContent value="crop">
           <form onSubmit={handleCropSubmit} className="space-y-4">
+            <ImageUploadWithCrop
+              onImageCropped={setCropImageFile}
+              aspectRatio={1}
+              label="Crop Image (square, 400x400)"
+            />
             <div><Label>Name (English)</Label><Input name="name_en" required /></div>
             <div><Label>Name (Telugu)</Label><Input name="name_te" required /></div>
             <div><Label>Name (Hindi)</Label><Input name="name_hi" required /></div>
@@ -126,6 +201,11 @@ export const ProposalForm = () => {
 
         <TabsContent value="problem">
           <form onSubmit={handleProblemSubmit} className="space-y-4">
+            <ImageUploadWithCrop
+              onImageCropped={setProblemImageFile}
+              aspectRatio={1}
+              label="Problem Image (square, 400x400)"
+            />
             <div>
               <Label>Crop</Label>
               <Select name="crop_id" required>
@@ -144,6 +224,11 @@ export const ProposalForm = () => {
 
         <TabsContent value="product">
           <form onSubmit={handleProductSubmit} className="space-y-4">
+            <ImageUploadWithCrop
+              onImageCropped={setProductImageFile}
+              aspectRatio={1}
+              label="Product Image (square, 400x400)"
+            />
             <div>
               <Label>Crop</Label>
               <Select name="crop_id" value={selectedCropForProduct} onValueChange={setSelectedCropForProduct} required>
