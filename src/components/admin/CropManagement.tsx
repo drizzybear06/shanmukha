@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { PlusCircle, Edit, Trash2, Leaf } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { ImageUploadWithCrop } from '@/components/ImageUploadWithCrop';
 import {
   Dialog,
   DialogContent,
@@ -24,7 +25,9 @@ export const CropManagement = () => {
     name_en: '',
     name_te: '',
     name_hi: '',
+    image_url: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchCrops();
@@ -47,21 +50,45 @@ export const CropManagement = () => {
     e.preventDefault();
     
     try {
+      let imageUrl = formData.image_url;
+      
+      // Upload image if a new one was selected
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `crop-${Date.now()}.${fileExt}`;
+        const filePath = `crops/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(filePath, imageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('images')
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrl;
+      }
+
+      const dataToSave = { ...formData, image_url: imageUrl };
+
       if (editingCrop) {
         const { error } = await supabase
           .from('crops')
-          .update(formData)
+          .update(dataToSave)
           .eq('id', editingCrop.id);
         if (error) throw error;
         toast.success('Crop updated successfully');
       } else {
-        const { error } = await supabase.from('crops').insert([formData]);
+        const { error } = await supabase.from('crops').insert([dataToSave]);
         if (error) throw error;
         toast.success('Crop added successfully');
       }
       
       setShowDialog(false);
-      setFormData({ name_en: '', name_te: '', name_hi: '' });
+      setFormData({ name_en: '', name_te: '', name_hi: '', image_url: '' });
+      setImageFile(null);
       setEditingCrop(null);
       fetchCrops();
     } catch (error) {
@@ -90,6 +117,7 @@ export const CropManagement = () => {
       name_en: crop.name_en,
       name_te: crop.name_te,
       name_hi: crop.name_hi,
+      image_url: crop.image_url || '',
     });
     setShowDialog(true);
   };
@@ -108,13 +136,17 @@ export const CropManagement = () => {
         {crops.map((crop) => (
           <Card key={crop.id} className="p-4">
             <div className="flex items-start gap-4">
-              <div className="bg-primary/10 p-3 rounded-full">
-                <Leaf className="w-6 h-6 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg">{crop.name_en}</h3>
-                <p className="text-sm text-muted-foreground">{crop.name_te}</p>
-                <p className="text-sm text-muted-foreground">{crop.name_hi}</p>
+              {crop.image_url ? (
+                <img src={crop.image_url} alt={crop.name_en} className="w-16 h-16 object-cover rounded-lg" />
+              ) : (
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <Leaf className="w-6 h-6 text-primary" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-lg truncate">{crop.name_en}</h3>
+                <p className="text-sm text-muted-foreground truncate">{crop.name_te}</p>
+                <p className="text-sm text-muted-foreground truncate">{crop.name_hi}</p>
                 <div className="flex gap-2 mt-3">
                   <Button size="sm" variant="outline" onClick={() => openEditDialog(crop)}>
                     <Edit className="h-3 w-3" />
@@ -135,6 +167,12 @@ export const CropManagement = () => {
             <DialogTitle>{editingCrop ? 'Edit Crop' : 'Add New Crop'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <ImageUploadWithCrop
+              onImageCropped={setImageFile}
+              aspectRatio={1}
+              label="Crop Image (square, 400x400)"
+              currentImage={formData.image_url}
+            />
             <div>
               <Label>Name (English)</Label>
               <Input

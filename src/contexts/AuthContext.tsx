@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // First check if user exists in custom users table
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('*')
+        .select('id, username, role, avatar_url')
         .eq('username', username)
         .single();
 
@@ -65,20 +65,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return false;
       }
 
-      // Verify password using database function
-      const { data: verifyData, error: verifyError } = await supabase.rpc('verify_user_password', {
-        p_username: username,
-        p_password: password
-      });
-
-      if (verifyError || !verifyData) {
-        return false;
-      }
-
-      // Sign in with Supabase Auth using the user's ID as email
+      // Sign in with Supabase Auth using the user's ID
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: `${userData.id}@kisansethu.local`,
-        password: userData.id // Use ID as password
+        password: userData.id
       });
 
       if (signInError) {
