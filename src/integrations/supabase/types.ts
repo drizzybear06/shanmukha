@@ -264,10 +264,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      verify_user_password: {
-        Args: { p_password: string; p_username: string }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       app_role: "admin" | "manager" | "guest"
