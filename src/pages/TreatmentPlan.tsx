@@ -31,7 +31,7 @@ const TreatmentPlan = () => {
   const totalDosageMin = product.dosage_min * acres;
   const totalDosageMax = product.dosage_max * acres;
 
-  // Calculate recommended pack size and number of packs with smart algorithm
+  // Calculate recommended pack size and number of packs with smart combination algorithm
   const calculatePackRecommendation = (totalDosage: number) => {
     // Parse pack sizes to numbers and convert to same unit as dosage
     const packSizesWithInfo = product.pack_sizes.map(size => {
@@ -48,14 +48,14 @@ const TreatmentPlan = () => {
         // Product unit is in liters
         if (sizeUnit.includes('ml')) {
           converted = num / 1000; // ml to L
-        } else if (sizeUnit.includes('l')) {
+        } else if (sizeUnit.includes('l') && !sizeUnit.includes('ml')) {
           converted = num; // already in L
         }
       } else if (productUnit.includes('ml')) {
         // Product unit is in ml
         if (sizeUnit.includes('ml')) {
           converted = num; // already in ml
-        } else if (sizeUnit.includes('l')) {
+        } else if (sizeUnit.includes('l') && !sizeUnit.includes('ml')) {
           converted = num * 1000; // L to ml
         }
       } else if (productUnit.includes('kg')) {
@@ -79,32 +79,65 @@ const TreatmentPlan = () => {
 
     if (packSizesWithInfo.length === 0) return null;
 
-    // Strategy: Find the pack size that minimizes waste while using fewest packs
-    let bestOption = null;
-    let minWastePercentage = Infinity;
-
-    // Try each pack size as the primary option
-    for (const pack of packSizesWithInfo) {
-      const packsNeeded = Math.ceil(totalDosage / pack.value);
-      const totalProvided = pack.value * packsNeeded;
-      const waste = totalProvided - totalDosage;
-      const wastePercentage = (waste / totalDosage) * 100;
-
-      // Prefer options with less waste, but also consider number of packs
-      if (wastePercentage < minWastePercentage || 
-          (Math.abs(wastePercentage - minWastePercentage) < 5 && packsNeeded < (bestOption?.packsNeeded || Infinity))) {
-        minWastePercentage = wastePercentage;
-        bestOption = {
-          packSize: pack.original,
-          packValue: pack.value,
-          packsNeeded,
-          totalInPacks: totalProvided.toFixed(2),
-          waste: waste.toFixed(2)
-        };
+    // Smart combination algorithm: Try to find best combination of packs
+    const findBestCombination = () => {
+      let remaining = totalDosage;
+      const combination: { pack: any; count: number }[] = [];
+      
+      // Greedy approach: start from largest packs
+      for (const pack of packSizesWithInfo) {
+        if (remaining <= 0) break;
+        
+        const count = Math.floor(remaining / pack.value);
+        if (count > 0) {
+          combination.push({ pack, count });
+          remaining -= count * pack.value;
+        }
       }
-    }
+      
+      // If there's still remaining, add one more of the smallest pack that fits
+      if (remaining > 0) {
+        for (let i = packSizesWithInfo.length - 1; i >= 0; i--) {
+          const pack = packSizesWithInfo[i];
+          if (pack.value >= remaining) {
+            const existing = combination.find(c => c.pack.original === pack.original);
+            if (existing) {
+              existing.count++;
+            } else {
+              combination.push({ pack, count: 1 });
+            }
+            remaining = 0;
+            break;
+          }
+        }
+      }
+      
+      // If still remaining (no pack is small enough), add smallest pack
+      if (remaining > 0 && packSizesWithInfo.length > 0) {
+        const smallestPack = packSizesWithInfo[packSizesWithInfo.length - 1];
+        const existing = combination.find(c => c.pack.original === smallestPack.original);
+        if (existing) {
+          existing.count++;
+        } else {
+          combination.push({ pack: smallestPack, count: 1 });
+        }
+      }
+      
+      return combination;
+    };
 
-    return bestOption;
+    const combination = findBestCombination();
+    const totalProvided = combination.reduce((sum, c) => sum + (c.pack.value * c.count), 0);
+    const totalPacks = combination.reduce((sum, c) => sum + c.count, 0);
+
+    return {
+      combination,
+      totalPacks,
+      totalProvided: totalProvided.toFixed(2),
+      displayText: combination.map(c => 
+        `${c.count} pack${c.count > 1 ? 's' : ''} of ${c.pack.original}`
+      ).join(' + ')
+    };
   };
 
   const packRecommendation = calculatePackRecommendation(totalDosageMax || totalDosageMin);
@@ -198,9 +231,9 @@ const TreatmentPlan = () => {
           doc.text('Recommended:', 20, y);
           doc.setTextColor(0, 0, 0);
           y += 8;
-          doc.text(`${packRecommendation.packsNeeded} pack(s) of ${packRecommendation.packSize}`, 20, y);
+          doc.text(packRecommendation.displayText, 20, y);
           y += 8;
-          doc.text(`Total: ${packRecommendation.totalInPacks} ${product.dosage_unit}`, 20, y);
+          doc.text(`Total: ${packRecommendation.totalProvided} ${product.dosage_unit}`, 20, y);
         }
         y += 15;
       }
@@ -242,7 +275,7 @@ const TreatmentPlan = () => {
 
   const handleShareWhatsApp = () => {
     const packInfo = packRecommendation 
-      ? `\n*Recommended:* ${packRecommendation.packsNeeded} pack(s) of ${packRecommendation.packSize}\n(Total: ${packRecommendation.totalInPacks} ${product.dosage_unit})`
+      ? `\n*Recommended:* ${packRecommendation.displayText}\n(Total: ${packRecommendation.totalProvided} ${product.dosage_unit})`
       : '';
     
     const message = `
@@ -336,11 +369,11 @@ _Powered by Shanmukha Agritech_
                     <p className="text-sm font-semibold text-muted-foreground mb-2">
                       {t('recommendedPack')}
                     </p>
-                    <p className="text-2xl font-display font-bold text-primary mb-3">
-                      {packRecommendation.packsNeeded} pack{packRecommendation.packsNeeded > 1 ? 's' : ''} of {packRecommendation.packSize}
+                    <p className="text-xl font-display font-bold text-primary mb-3">
+                      {packRecommendation.displayText}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Total: {packRecommendation.totalInPacks} {product.dosage_unit}
+                      Total: {packRecommendation.totalProvided} {product.dosage_unit}
                     </p>
                   </div>
                 )}

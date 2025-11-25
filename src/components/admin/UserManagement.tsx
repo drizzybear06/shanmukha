@@ -11,7 +11,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/AuthContext';
-import bcrypt from 'bcryptjs';
 
 export const UserManagement = () => {
   const { user: currentUser } = useAuth();
@@ -39,12 +38,21 @@ export const UserManagement = () => {
     }
   };
 
+  // Simple hash function for passwords
+  const hashPassword = async (password: string): Promise<string> => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  };
+
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
       // Hash the password before storing
-      const hashedPassword = await bcrypt.hash(formData.password, 10);
+      const hashedPassword = await hashPassword(formData.password);
       
       const { error } = await supabase.from('users').insert([{
         username: formData.username,
@@ -68,7 +76,7 @@ export const UserManagement = () => {
     
     try {
       // Hash the password before storing
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const hashedPassword = await hashPassword(newPassword);
       
       const { error } = await supabase
         .from('users')
