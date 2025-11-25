@@ -35,9 +35,14 @@ export const ProfilePictureUpload = () => {
       await updateAvatar(publicUrl);
       toast.success('Profile picture updated');
       setOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading avatar:', error);
-      toast.error('Failed to upload profile picture');
+      // If it's a storage policy error, provide more helpful message
+      if (error?.message?.includes('row-level security')) {
+        toast.error('You need to be logged in to upload images');
+      } else {
+        toast.error('Failed to upload profile picture');
+      }
     } finally {
       setUploading(false);
     }

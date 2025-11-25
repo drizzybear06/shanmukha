@@ -23,80 +23,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkUser();
-  }, []);
-
-  const checkUser = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (userData) {
-          setUser({
-            id: userData.id,
-            username: userData.username,
-            role: userData.role,
-            avatar_url: userData.avatar_url
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Check user error:', error);
-    } finally {
-      setLoading(false);
+    // Check localStorage for saved user
+    const savedUser = localStorage.getItem('kisansethu_user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
     }
-  };
+    setLoading(false);
+  }, []);
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      // First check if user exists in custom users table
+      // Check user credentials directly from database
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('id, username, role, avatar_url')
+        .select('id, username, role, avatar_url, password_hash')
         .eq('username', username)
+        .eq('password_hash', password)
         .single();
 
       if (userError || !userData) {
         return false;
       }
 
-      // Sign in with Supabase Auth using the user's ID
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: `${userData.id}@kisansethu.local`,
-        password: userData.id
-      });
-
-      if (signInError) {
-        // User doesn't exist in auth.users, create them
-        const { error: signUpError } = await supabase.auth.signUp({
-          email: `${userData.id}@kisansethu.local`,
-          password: userData.id,
-          options: {
-            data: {
-              username: userData.username,
-              role: userData.role,
-              avatar_url: userData.avatar_url
-            }
-          }
-        });
-
-        if (signUpError) {
-          return false;
-        }
-      }
-
-      setUser({
+      const user: User = {
         id: userData.id,
         username: userData.username,
         role: userData.role,
         avatar_url: userData.avatar_url
-      });
-      
+      };
+
+      setUser(user);
+      localStorage.setItem('kisansethu_user', JSON.stringify(user));
       return true;
     } catch (error) {
       console.error('Login error:', error);
@@ -104,9 +61,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = async () => {
-    await supabase.auth.signOut();
+  const logout = () => {
     setUser(null);
+    localStorage.removeItem('kisansethu_user');
   };
 
   const updateAvatar = async (avatarUrl: string) => {
@@ -118,7 +75,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .eq('id', user.id);
     
     if (!error) {
-      setUser({ ...user, avatar_url: avatarUrl });
+      const updatedUser = { ...user, avatar_url: avatarUrl };
+      setUser(updatedUser);
+      localStorage.setItem('kisansethu_user', JSON.stringify(updatedUser));
     }
   };
 
