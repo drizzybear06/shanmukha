@@ -137,7 +137,7 @@ const About = () => {
             </p>
             <Button
               size="lg"
-              onClick={() => window.open('https://shanmukhaagro.com', '_blank')}
+              onClick={() => window.open('https://shanmukhaagritech.com/', '_blank')}
             >
               Visit Our Website
             </Button>

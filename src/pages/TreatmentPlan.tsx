@@ -37,52 +37,44 @@ const TreatmentPlan = () => {
     const packSizesWithInfo = product.pack_sizes.map(size => {
       const match = size.match(/(\d+(?:\.\d+)?)/);
       const num = match ? parseFloat(match[1]) : 0;
-      // Convert to base unit (L or gm)
-      const converted = size.toLowerCase().includes('ml') ? num / 1000 : num;
+      // Convert to base unit (L or gm/kg)
+      let converted = num;
+      if (size.toLowerCase().includes('ml')) {
+        converted = num / 1000;
+      } else if (size.toLowerCase().includes('gm') || size.toLowerCase().includes('g')) {
+        converted = num;
+      } else if (size.toLowerCase().includes('kg')) {
+        converted = num * 1000;
+      }
       return { original: size, value: converted };
-    }).filter(p => p.value > 0);
+    }).filter(p => p.value > 0).sort((a, b) => b.value - a.value); // Sort descending by size
 
     if (packSizesWithInfo.length === 0) return null;
 
-    // Sort by size ascending
-    packSizesWithInfo.sort((a, b) => a.value - b.value);
-
-    // Find the best combination that minimizes waste and number of packs
+    // Strategy: Find the combination that minimizes waste while using fewest packs
     let bestOption = null;
-    let minWaste = Infinity;
+    let minWastePercentage = Infinity;
 
+    // Try each pack size as the primary option
     for (const pack of packSizesWithInfo) {
       const packsNeeded = Math.ceil(totalDosage / pack.value);
       const totalProvided = pack.value * packsNeeded;
       const waste = totalProvided - totalDosage;
       const wastePercentage = (waste / totalDosage) * 100;
 
-      // Prefer options with less than 20% waste, or exact matches
-      if (wastePercentage < 20 || waste < minWaste) {
-        if (waste < minWaste || (waste === minWaste && packsNeeded < (bestOption?.packsNeeded || Infinity))) {
-          minWaste = waste;
-          bestOption = {
-            packSize: pack.original,
-            packValue: pack.value,
-            packsNeeded,
-            totalInPacks: totalProvided.toFixed(2),
-            waste: waste.toFixed(2)
-          };
-        }
+      // Prefer options with less waste, but also consider number of packs
+      // If waste is similar, prefer fewer packs (larger pack sizes)
+      if (wastePercentage < minWastePercentage || 
+          (Math.abs(wastePercentage - minWastePercentage) < 5 && packsNeeded < (bestOption?.packsNeeded || Infinity))) {
+        minWastePercentage = wastePercentage;
+        bestOption = {
+          packSize: pack.original,
+          packValue: pack.value,
+          packsNeeded,
+          totalInPacks: totalProvided.toFixed(2),
+          waste: waste.toFixed(2)
+        };
       }
-    }
-
-    // If no good option found (all have >20% waste), pick the largest pack
-    if (!bestOption) {
-      const largestPack = packSizesWithInfo[packSizesWithInfo.length - 1];
-      const packsNeeded = Math.ceil(totalDosage / largestPack.value);
-      bestOption = {
-        packSize: largestPack.original,
-        packValue: largestPack.value,
-        packsNeeded,
-        totalInPacks: (largestPack.value * packsNeeded).toFixed(2),
-        waste: ((largestPack.value * packsNeeded) - totalDosage).toFixed(2)
-      };
     }
 
     return bestOption;

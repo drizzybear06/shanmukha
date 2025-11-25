@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Sprout, FileText, LogIn, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import logo from '@/assets/shanmukha-logo.png';
+
 
 const Home = () => {
   const { t } = useLanguage();
@@ -13,8 +13,7 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10">
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
-        <div className="text-center mb-12 animate-fade-in flex flex-col items-center">
-          <img src={logo} alt="Shanmukha Agritech Logo" className="w-24 h-24 mb-4" />
+        <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-5xl md:text-6xl font-display font-bold text-gradient-primary mb-3">
             {t('appTitle')}
           </h1>
