@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/AuthContext';
+import bcrypt from 'bcryptjs';
 
 export const UserManagement = () => {
   const { user: currentUser } = useAuth();
@@ -42,9 +43,12 @@ export const UserManagement = () => {
     e.preventDefault();
     
     try {
+      // Hash the password before storing
+      const hashedPassword = await bcrypt.hash(formData.password, 10);
+      
       const { error } = await supabase.from('users').insert([{
         username: formData.username,
-        password_hash: formData.password, // Store plain text password
+        password_hash: hashedPassword,
         role: formData.role,
       }]);
 
@@ -63,9 +67,12 @@ export const UserManagement = () => {
     e.preventDefault();
     
     try {
+      // Hash the password before storing
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
       const { error } = await supabase
         .from('users')
-        .update({ password_hash: newPassword }) // Store plain text password
+        .update({ password_hash: hashedPassword })
         .eq('id', selectedUser.id);
 
       if (error) throw error;
