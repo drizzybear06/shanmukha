@@ -6,6 +6,8 @@ import { Home, Download, Share2, FileCheck } from 'lucide-react';
 import { TreatmentData } from '@/types/app';
 import jsPDF from 'jspdf';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useEffect } from 'react';
 
 const TreatmentPlan = () => {
   const { language, t } = useLanguage();
@@ -15,6 +17,25 @@ const TreatmentPlan = () => {
 
   const totalDosageMin = product.dosage_min * acres;
   const totalDosageMax = product.dosage_max * acres;
+
+  useEffect(() => {
+    // Track analytics when treatment plan is generated
+    const trackAnalytics = async () => {
+      try {
+        await supabase.from('analytics').insert({
+          crop_id: crop.id,
+          problem_id: problem.id,
+          product_id: product.id,
+          acres: acres,
+          language: language,
+        });
+      } catch (error) {
+        console.error('Analytics tracking error:', error);
+      }
+    };
+
+    trackAnalytics();
+  }, [crop.id, problem.id, product.id, acres, language]);
 
   const getCropName = (crop: any) => {
     if (language === 'te') return crop.name_te;
