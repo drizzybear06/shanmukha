@@ -1,0 +1,170 @@
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PlusCircle, Edit, Trash2, Package } from 'lucide-react';
+import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+export const ProductManagement = () => {
+  const [products, setProducts] = useState<any[]>([]);
+  const [problems, setProblems] = useState<any[]>([]);
+  const [showDialog, setShowDialog] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    problem_id: '',
+    name: '',
+    dosage_recommendation: '',
+    dosage_min: '',
+    dosage_max: '',
+    dosage_unit: 'ml',
+    pack_sizes: '',
+    spray_interval: '',
+    safety_notes: '',
+  });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [productsRes, problemsRes] = await Promise.all([
+        supabase.from('products').select('*, problems(title_en)'),
+        supabase.from('problems').select('*'),
+      ]);
+      
+      setProducts(productsRes.data || []);
+      setProblems(problemsRes.data || []);
+    } catch (error) {
+      toast.error('Failed to load data');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const data = {
+        ...formData,
+        dosage_min: parseFloat(formData.dosage_min),
+        dosage_max: parseFloat(formData.dosage_max),
+        pack_sizes: formData.pack_sizes.split(',').map(s => s.trim()),
+      };
+
+      if (editingProduct) {
+        await supabase.from('products').update(data).eq('id', editingProduct.id);
+        toast.success('Updated');
+      } else {
+        await supabase.from('products').insert([data]);
+        toast.success('Added');
+      }
+      
+      setShowDialog(false);
+      resetForm();
+      fetchData();
+    } catch (error) {
+      toast.error('Failed');
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      problem_id: '', name: '', dosage_recommendation: '',
+      dosage_min: '', dosage_max: '', dosage_unit: 'ml',
+      pack_sizes: '', spray_interval: '', safety_notes: '',
+    });
+    setEditingProduct(null);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-display font-bold">Product Management</h2>
+        <Button onClick={() => setShowDialog(true)}>
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Add Product
+        </Button>
+      </div>
+
+      <div className="grid gap-4">
+        {products.map((product) => (
+          <Card key={product.id} className="p-4">
+            <div className="flex items-start gap-4">
+              <Package className="w-8 h-8 text-accent" />
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground">{product.problems?.title_en}</p>
+                <h3 className="font-bold text-lg">{product.name}</h3>
+                <p className="text-sm">{product.dosage_recommendation}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Packs: {product.pack_sizes.join(', ')}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => {
+                  setEditingProduct(product);
+                  setFormData({
+                    problem_id: product.problem_id,
+                    name: product.name,
+                    dosage_recommendation: product.dosage_recommendation,
+                    dosage_min: product.dosage_min.toString(),
+                    dosage_max: product.dosage_max.toString(),
+                    dosage_unit: product.dosage_unit,
+                    pack_sizes: product.pack_sizes.join(', '),
+                    spray_interval: product.spray_interval || '',
+                    safety_notes: product.safety_notes || '',
+                  });
+                  setShowDialog(true);
+                }}>
+                  <Edit className="h-3 w-3" />
+                </Button>
+                <Button size="sm" variant="destructive" onClick={async () => {
+                  if (confirm('Delete?')) {
+                    await supabase.from('products').delete().eq('id', product.id);
+                    fetchData();
+                  }
+                }}>
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingProduct ? 'Edit' : 'Add'} Product</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label>Problem</Label>
+              <Select value={formData.problem_id} onValueChange={(val) => setFormData({ ...formData, problem_id: val })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {problems.map((p) => <SelectItem key={p.id} value={p.id}>{p.title_en}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div><Label>Name</Label><Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required /></div>
+            <div><Label>Dosage Recommendation</Label><Input value={formData.dosage_recommendation} onChange={(e) => setFormData({ ...formData, dosage_recommendation: e.target.value })} required /></div>
+            <div className="grid grid-cols-3 gap-2">
+              <div><Label>Min Dosage</Label><Input type="number" value={formData.dosage_min} onChange={(e) => setFormData({ ...formData, dosage_min: e.target.value })} required /></div>
+              <div><Label>Max Dosage</Label><Input type="number" value={formData.dosage_max} onChange={(e) => setFormData({ ...formData, dosage_max: e.target.value })} required /></div>
+              <div><Label>Unit</Label><Input value={formData.dosage_unit} onChange={(e) => setFormData({ ...formData, dosage_unit: e.target.value })} required /></div>
+            </div>
+            <div><Label>Pack Sizes (comma-separated)</Label><Input value={formData.pack_sizes} onChange={(e) => setFormData({ ...formData, pack_sizes: e.target.value })} required /></div>
+            <div><Label>Spray Interval</Label><Input value={formData.spray_interval} onChange={(e) => setFormData({ ...formData, spray_interval: e.target.value })} /></div>
+            <div><Label>Safety Notes</Label><Textarea value={formData.safety_notes} onChange={(e) => setFormData({ ...formData, safety_notes: e.target.value })} /></div>
+            <Button type="submit" className="w-full">{editingProduct ? 'Update' : 'Add'}</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
