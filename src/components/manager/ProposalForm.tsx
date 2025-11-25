@@ -14,6 +14,7 @@ export const ProposalForm = () => {
   const { user } = useAuth();
   const [crops, setCrops] = useState<any[]>([]);
   const [problems, setProblems] = useState<any[]>([]);
+  const [selectedCropForProduct, setSelectedCropForProduct] = useState<string>('');
 
   useEffect(() => {
     fetchData();
@@ -82,6 +83,7 @@ export const ProposalForm = () => {
         manager_id: user?.id,
         type: 'product',
         payload_json: {
+          crop_id: formData.get('crop_id') as string,
           problem_id: formData.get('problem_id') as string,
           name: formData.get('name') as string,
           dosage_recommendation: formData.get('dosage_recommendation') as string,
@@ -96,6 +98,7 @@ export const ProposalForm = () => {
       
       toast.success('Product proposal submitted!');
       e.currentTarget.reset();
+      setSelectedCropForProduct('');
     } catch (error) {
       toast.error('Failed to submit');
     }
@@ -142,11 +145,20 @@ export const ProposalForm = () => {
         <TabsContent value="product">
           <form onSubmit={handleProductSubmit} className="space-y-4">
             <div>
-              <Label>Problem</Label>
-              <Select name="problem_id" required>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Label>Crop</Label>
+              <Select name="crop_id" value={selectedCropForProduct} onValueChange={setSelectedCropForProduct} required>
+                <SelectTrigger><SelectValue placeholder="Select crop" /></SelectTrigger>
                 <SelectContent>
-                  {problems.map(p => <SelectItem key={p.id} value={p.id}>{p.title_en}</SelectItem>)}
+                  {crops.map(c => <SelectItem key={c.id} value={c.id}>{c.name_en}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Problem</Label>
+              <Select name="problem_id" required disabled={!selectedCropForProduct}>
+                <SelectTrigger><SelectValue placeholder={selectedCropForProduct ? "Select problem" : "Select crop first"} /></SelectTrigger>
+                <SelectContent>
+                  {problems.filter(p => p.crop_id === selectedCropForProduct).map(p => <SelectItem key={p.id} value={p.id}>{p.title_en}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
