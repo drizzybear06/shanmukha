@@ -33,87 +33,97 @@ const TreatmentPlan = () => {
 
   // Calculate recommended pack size and number of packs with smart combination algorithm
   const calculatePackRecommendation = (totalDosage: number) => {
-    // Parse pack sizes to numbers and convert to same unit as dosage
+    console.log('Total dosage needed:', totalDosage, product.dosage_unit);
+    
+    // Parse pack sizes and convert to same unit as dosage
     const packSizesWithInfo = product.pack_sizes.map(size => {
-      const match = size.match(/(\d+(?:\.\d+)?)/);
-      const num = match ? parseFloat(match[1]) : 0;
+      const numMatch = size.match(/(\d+(?:\.\d+)?)/);
+      if (!numMatch) return null;
       
-      // Determine the unit and convert to the same unit as product.dosage_unit
-      let converted = num;
-      const sizeUnit = size.toLowerCase();
-      const productUnit = product.dosage_unit.toLowerCase();
+      const num = parseFloat(numMatch[1]);
+      const sizeStr = size.toLowerCase();
+      const unitStr = product.dosage_unit.toLowerCase();
       
-      // Convert pack size to match product dosage unit
-      if (productUnit.includes('l') || productUnit === 'litre' || productUnit === 'liter') {
-        // Product unit is in liters
-        if (sizeUnit.includes('ml')) {
-          converted = num / 1000; // ml to L
-        } else if (sizeUnit.includes('l') && !sizeUnit.includes('ml')) {
-          converted = num; // already in L
+      let convertedValue = num;
+      
+      // Determine the base unit from product.dosage_unit
+      const isProductML = unitStr.includes('ml') || unitStr === 'milliliter' || unitStr === 'millilitre';
+      const isProductL = !isProductML && (unitStr.includes('l') || unitStr === 'liter' || unitStr === 'litre');
+      const isProductGM = unitStr.includes('gm') || unitStr.includes('g ') || unitStr === 'gram' || unitStr === 'grams';
+      const isProductKG = unitStr.includes('kg') || unitStr === 'kilogram' || unitStr === 'kilograms';
+      
+      // Convert pack size to match product unit
+      if (isProductML) {
+        // Target unit is ml
+        if (sizeStr.includes('ml')) {
+          convertedValue = num; // already in ml
+        } else if (sizeStr === `${num}l` || sizeStr.endsWith(' l') || sizeStr.endsWith('l ')) {
+          convertedValue = num * 1000; // L to ml (1L = 1000ml)
         }
-      } else if (productUnit.includes('ml')) {
-        // Product unit is in ml
-        if (sizeUnit.includes('ml')) {
-          converted = num; // already in ml
-        } else if (sizeUnit.includes('l') && !sizeUnit.includes('ml')) {
-          converted = num * 1000; // L to ml
+      } else if (isProductL) {
+        // Target unit is L
+        if (sizeStr.includes('ml')) {
+          convertedValue = num / 1000; // ml to L
+        } else {
+          convertedValue = num; // already in L
         }
-      } else if (productUnit.includes('kg')) {
-        // Product unit is in kg
-        if (sizeUnit.includes('gm') || sizeUnit.includes('g ')) {
-          converted = num / 1000; // gm to kg
-        } else if (sizeUnit.includes('kg')) {
-          converted = num; // already in kg
+      } else if (isProductGM) {
+        // Target unit is gm
+        if (sizeStr.includes('gm') || sizeStr.includes('g ')) {
+          convertedValue = num; // already in gm
+        } else if (sizeStr.includes('kg')) {
+          convertedValue = num * 1000; // kg to gm
         }
-      } else {
-        // Product unit is in gm/g
-        if (sizeUnit.includes('gm') || sizeUnit.includes('g ')) {
-          converted = num; // already in gm
-        } else if (sizeUnit.includes('kg')) {
-          converted = num * 1000; // kg to gm
+      } else if (isProductKG) {
+        // Target unit is kg
+        if (sizeStr.includes('gm') || sizeStr.includes('g ')) {
+          convertedValue = num / 1000; // gm to kg
+        } else if (sizeStr.includes('kg')) {
+          convertedValue = num; // already in kg
         }
       }
       
-      return { original: size, value: converted };
-    }).filter(p => p.value > 0).sort((a, b) => b.value - a.value); // Sort descending by size
+      console.log(`Pack ${size}: converted to ${convertedValue} ${product.dosage_unit}`);
+      return { original: size, value: convertedValue };
+    }).filter(p => p !== null && p.value > 0).sort((a, b) => b.value - a.value); // Sort descending
 
     if (packSizesWithInfo.length === 0) return null;
 
-    // Smart combination algorithm: Try to find best combination of packs
-    const findBestCombination = () => {
-      let remaining = totalDosage;
-      const combination: { pack: any; count: number }[] = [];
+    // Smart combination: Use greedy algorithm starting from largest packs
+    let remaining = totalDosage;
+    const combination: { pack: any; count: number }[] = [];
+    
+    // Start with largest packs and work down
+    for (const pack of packSizesWithInfo) {
+      if (remaining <= 0) break;
       
-      // Greedy approach: start from largest packs
-      for (const pack of packSizesWithInfo) {
-        if (remaining <= 0) break;
-        
-        const count = Math.floor(remaining / pack.value);
-        if (count > 0) {
-          combination.push({ pack, count });
-          remaining -= count * pack.value;
-        }
+      const packsNeeded = Math.floor(remaining / pack.value);
+      if (packsNeeded > 0) {
+        combination.push({ pack, count: packsNeeded });
+        remaining -= packsNeeded * pack.value;
       }
-      
-      // If there's still remaining, add one more of the smallest pack that fits
-      if (remaining > 0) {
-        for (let i = packSizesWithInfo.length - 1; i >= 0; i--) {
-          const pack = packSizesWithInfo[i];
-          if (pack.value >= remaining) {
-            const existing = combination.find(c => c.pack.original === pack.original);
-            if (existing) {
-              existing.count++;
-            } else {
-              combination.push({ pack, count: 1 });
-            }
-            remaining = 0;
-            break;
+    }
+    
+    // If there's still remaining, add one smallest pack that can cover it
+    if (remaining > 0) {
+      // Find the smallest pack that's >= remaining
+      let foundPack = false;
+      for (let i = packSizesWithInfo.length - 1; i >= 0; i--) {
+        if (packSizesWithInfo[i].value >= remaining) {
+          const existing = combination.find(c => c.pack.original === packSizesWithInfo[i].original);
+          if (existing) {
+            existing.count++;
+          } else {
+            combination.push({ pack: packSizesWithInfo[i], count: 1 });
           }
+          foundPack = true;
+          remaining = 0;
+          break;
         }
       }
       
-      // If still remaining (no pack is small enough), add smallest pack
-      if (remaining > 0 && packSizesWithInfo.length > 0) {
+      // If no single pack covers remaining, use smallest pack
+      if (!foundPack && packSizesWithInfo.length > 0) {
         const smallestPack = packSizesWithInfo[packSizesWithInfo.length - 1];
         const existing = combination.find(c => c.pack.original === smallestPack.original);
         if (existing) {
@@ -122,21 +132,19 @@ const TreatmentPlan = () => {
           combination.push({ pack: smallestPack, count: 1 });
         }
       }
-      
-      return combination;
-    };
+    }
 
-    const combination = findBestCombination();
     const totalProvided = combination.reduce((sum, c) => sum + (c.pack.value * c.count), 0);
-    const totalPacks = combination.reduce((sum, c) => sum + c.count, 0);
+    const displayText = combination
+      .map(c => `${c.count} pack${c.count > 1 ? 's' : ''} of ${c.pack.original}`)
+      .join(' + ');
+
+    console.log('Recommendation:', displayText, 'Total:', totalProvided);
 
     return {
       combination,
-      totalPacks,
       totalProvided: totalProvided.toFixed(2),
-      displayText: combination.map(c => 
-        `${c.count} pack${c.count > 1 ? 's' : ''} of ${c.pack.original}`
-      ).join(' + ')
+      displayText
     };
   };
 
