@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import bcrypt from 'bcryptjs';
 
 interface User {
   id: string;
@@ -33,15 +34,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      // Check user credentials directly from database
+      // Fetch user from database
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('id, username, role, avatar_url, password_hash')
         .eq('username', username)
-        .eq('password_hash', password)
         .single();
 
       if (userError || !userData) {
+        return false;
+      }
+
+      // Compare password with hashed password
+      const isPasswordValid = await bcrypt.compare(password, userData.password_hash);
+      
+      if (!isPasswordValid) {
         return false;
       }
 

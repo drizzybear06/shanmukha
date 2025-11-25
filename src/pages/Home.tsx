@@ -14,7 +14,7 @@ const Home = () => {
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-gradient-primary mb-3">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold text-gradient-primary mb-3 break-words px-4">
             {t('appTitle')}
           </h1>
         </div>
