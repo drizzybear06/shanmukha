@@ -86,9 +86,13 @@ const ProblemSelection = () => {
                 onClick={() => handleProblemSelect(problem)}
               >
                 <div className="flex flex-col items-center gap-4">
-                  <div className="bg-destructive/10 p-8 rounded-full">
-                    <Bug className="w-16 h-16 text-destructive" />
-                  </div>
+                  {problem.image_url ? (
+                    <img src={problem.image_url} alt={getProblemTitle(problem)} className="w-24 h-24 object-cover rounded-2xl" />
+                  ) : (
+                    <div className="bg-destructive/10 p-8 rounded-full">
+                      <Bug className="w-16 h-16 text-destructive" />
+                    </div>
+                  )}
                   <h3 className="text-xl font-display font-bold text-center">
                     {getProblemTitle(problem)}
                   </h3>
