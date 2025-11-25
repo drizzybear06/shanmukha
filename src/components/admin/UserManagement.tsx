@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PlusCircle, Users, Key } from 'lucide-react';
 import { toast } from 'sonner';
-import bcrypt from 'bcryptjs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export const UserManagement = () => {
@@ -39,11 +38,9 @@ export const UserManagement = () => {
     e.preventDefault();
     
     try {
-      const hashedPassword = await bcrypt.hash(formData.password, 10);
-      
       const { error } = await supabase.from('users').insert([{
         username: formData.username,
-        password_hash: hashedPassword,
+        password_hash: formData.password, // Store plain text password
         role: formData.role,
       }]);
 
@@ -62,11 +59,9 @@ export const UserManagement = () => {
     e.preventDefault();
     
     try {
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      
       const { error } = await supabase
         .from('users')
-        .update({ password_hash: hashedPassword })
+        .update({ password_hash: newPassword }) // Store plain text password
         .eq('id', selectedUser.id);
 
       if (error) throw error;
