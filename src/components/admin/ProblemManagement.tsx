@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PlusCircle, Edit, Trash2, Bug } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ImageUploadWithCrop } from '@/components/ImageUploadWithCrop';
 
 export const ProblemManagement = () => {
   const [problems, setProblems] = useState<any[]>([]);
@@ -19,7 +20,9 @@ export const ProblemManagement = () => {
     title_en: '',
     title_te: '',
     title_hi: '',
+    image_url: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -47,21 +50,45 @@ export const ProblemManagement = () => {
     e.preventDefault();
     
     try {
+      let imageUrl = formData.image_url;
+      
+      // Upload image if a new one was selected
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `problem-${Date.now()}.${fileExt}`;
+        const filePath = `problems/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(filePath, imageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('images')
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrl;
+      }
+
+      const dataToSave = { ...formData, image_url: imageUrl };
+
       if (editingProblem) {
         const { error } = await supabase
           .from('problems')
-          .update(formData)
+          .update(dataToSave)
           .eq('id', editingProblem.id);
         if (error) throw error;
         toast.success('Problem updated');
       } else {
-        const { error } = await supabase.from('problems').insert([formData]);
+        const { error } = await supabase.from('problems').insert([dataToSave]);
         if (error) throw error;
         toast.success('Problem added');
       }
       
       setShowDialog(false);
-      setFormData({ crop_id: '', title_en: '', title_te: '', title_hi: '' });
+      setFormData({ crop_id: '', title_en: '', title_te: '', title_hi: '', image_url: '' });
+      setImageFile(null);
       setEditingProblem(null);
       fetchData();
     } catch (error) {
@@ -97,15 +124,19 @@ export const ProblemManagement = () => {
         {problems.map((problem) => (
           <Card key={problem.id} className="p-4">
             <div className="flex items-start gap-4">
-              <div className="bg-destructive/10 p-3 rounded-full">
-                <Bug className="w-6 h-6 text-destructive" />
-              </div>
-              <div className="flex-1">
+              {problem.image_url ? (
+                <img src={problem.image_url} alt={problem.title_en} className="w-16 h-16 object-cover rounded-lg" />
+              ) : (
+                <div className="bg-destructive/10 p-3 rounded-full">
+                  <Bug className="w-6 h-6 text-destructive" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground mb-1">
                   {problem.crops?.name_en}
                 </p>
-                <h3 className="font-semibold">{problem.title_en}</h3>
-                <p className="text-sm text-muted-foreground">{problem.title_te}</p>
+                <h3 className="font-semibold truncate">{problem.title_en}</h3>
+                <p className="text-sm text-muted-foreground truncate">{problem.title_te}</p>
                 <div className="flex gap-2 mt-3">
                   <Button size="sm" variant="outline" onClick={() => {
                     setEditingProblem(problem);
@@ -114,6 +145,7 @@ export const ProblemManagement = () => {
                       title_en: problem.title_en,
                       title_te: problem.title_te,
                       title_hi: problem.title_hi,
+                      image_url: problem.image_url || '',
                     });
                     setShowDialog(true);
                   }}>
@@ -135,6 +167,12 @@ export const ProblemManagement = () => {
             <DialogTitle>{editingProblem ? 'Edit' : 'Add'} Problem</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <ImageUploadWithCrop
+              onImageCropped={setImageFile}
+              aspectRatio={1}
+              label="Problem Image (square, 400x400)"
+              currentImage={formData.image_url}
+            />
             <div>
               <Label>Crop</Label>
               <Select value={formData.crop_id} onValueChange={(val) => setFormData({ ...formData, crop_id: val })}>

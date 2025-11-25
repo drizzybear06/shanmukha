@@ -130,9 +130,13 @@ const ProductRecommendation = () => {
                 className="p-6 hover:shadow-agricultural transition-all duration-300 border-2 animate-fade-in"
               >
                 <div className="flex flex-col gap-4">
-                  <div className="bg-accent/10 p-6 rounded-2xl flex items-center justify-center">
-                    <Package className="w-12 h-12 text-accent" />
-                  </div>
+                  {product.image_url ? (
+                    <img src={product.image_url} alt={product.name} className="w-full h-40 object-cover rounded-2xl" />
+                  ) : (
+                    <div className="bg-accent/10 p-6 rounded-2xl flex items-center justify-center">
+                      <Package className="w-12 h-12 text-accent" />
+                    </div>
+                  )}
                   
                   <h3 className="text-2xl font-display font-bold">{product.name}</h3>
                   

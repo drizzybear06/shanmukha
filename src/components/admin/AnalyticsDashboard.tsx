@@ -15,6 +15,19 @@ export const AnalyticsDashboard = () => {
 
   useEffect(() => {
     fetchAnalytics();
+
+    // Set up real-time subscription for analytics updates
+    const channel = supabase
+      .channel('analytics-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'analytics' }, () => {
+        console.log('Analytics data changed, refreshing...');
+        fetchAnalytics();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchAnalytics = async () => {

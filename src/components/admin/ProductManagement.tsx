@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PlusCircle, Edit, Trash2, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ImageUploadWithCrop } from '@/components/ImageUploadWithCrop';
 
 export const ProductManagement = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -25,7 +26,9 @@ export const ProductManagement = () => {
     pack_sizes: '',
     spray_interval: '',
     safety_notes: '',
+    image_url: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -49,8 +52,30 @@ export const ProductManagement = () => {
     e.preventDefault();
     
     try {
+      let imageUrl = formData.image_url;
+      
+      // Upload image if a new one was selected
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `product-${Date.now()}.${fileExt}`;
+        const filePath = `products/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(filePath, imageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('images')
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrl;
+      }
+
       const data = {
         ...formData,
+        image_url: imageUrl,
         dosage_min: parseFloat(formData.dosage_min),
         dosage_max: parseFloat(formData.dosage_max),
         pack_sizes: formData.pack_sizes.split(',').map(s => s.trim()),
@@ -76,8 +101,9 @@ export const ProductManagement = () => {
     setFormData({
       problem_id: '', name: '', dosage_recommendation: '',
       dosage_min: '', dosage_max: '', dosage_unit: 'ml',
-      pack_sizes: '', spray_interval: '', safety_notes: '',
+      pack_sizes: '', spray_interval: '', safety_notes: '', image_url: '',
     });
+    setImageFile(null);
     setEditingProduct(null);
   };
 
@@ -95,12 +121,18 @@ export const ProductManagement = () => {
         {products.map((product) => (
           <Card key={product.id} className="p-4">
             <div className="flex items-start gap-4">
-              <Package className="w-8 h-8 text-accent" />
-              <div className="flex-1">
+              {product.image_url ? (
+                <img src={product.image_url} alt={product.name} className="w-16 h-16 object-cover rounded-lg" />
+              ) : (
+                <div className="bg-accent/10 p-3 rounded-full">
+                  <Package className="w-8 h-8 text-accent" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground">{product.problems?.title_en}</p>
-                <h3 className="font-bold text-lg">{product.name}</h3>
-                <p className="text-sm">{product.dosage_recommendation}</p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <h3 className="font-bold text-lg truncate">{product.name}</h3>
+                <p className="text-sm truncate">{product.dosage_recommendation}</p>
+                <p className="text-xs text-muted-foreground mt-1 truncate">
                   Packs: {product.pack_sizes.join(', ')}
                 </p>
               </div>
@@ -117,6 +149,7 @@ export const ProductManagement = () => {
                     pack_sizes: product.pack_sizes.join(', '),
                     spray_interval: product.spray_interval || '',
                     safety_notes: product.safety_notes || '',
+                    image_url: product.image_url || '',
                   });
                   setShowDialog(true);
                 }}>
@@ -142,6 +175,12 @@ export const ProductManagement = () => {
             <DialogTitle>{editingProduct ? 'Edit' : 'Add'} Product</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <ImageUploadWithCrop
+              onImageCropped={setImageFile}
+              aspectRatio={1}
+              label="Product Image (square, 400x400)"
+              currentImage={formData.image_url}
+            />
             <div>
               <Label>Problem</Label>
               <Select value={formData.problem_id} onValueChange={(val) => setFormData({ ...formData, problem_id: val })}>
