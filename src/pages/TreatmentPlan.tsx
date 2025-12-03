@@ -180,6 +180,23 @@ const TreatmentPlan = () => {
       doc.setFontSize(12);
       let y = 50;
       
+      // Add product image if available
+      if (product.image_url) {
+        try {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.src = product.image_url;
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            setTimeout(reject, 3000);
+          });
+          doc.addImage(img, 'JPEG', 150, 40, 40, 40);
+        } catch (e) {
+          console.log('Could not load product image for PDF');
+        }
+      }
+      
       doc.text(`Crop: ${getCropName(crop)}`, 20, y);
       y += 10;
       doc.text(`Problem: ${getProblemTitle(problem)}`, 20, y);
@@ -344,14 +361,25 @@ _Powered by Shanmukha Agritech_
                 <h3 className="text-sm font-semibold text-muted-foreground mb-1">
                   {t('product')}
                 </h3>
-                <p className="text-3xl font-display font-bold text-primary mb-1">
-                  {product.name}
-                </p>
-                {product.scientific_formula && (
-                  <p className="text-lg text-muted-foreground mb-4">
-                    ({product.scientific_formula})
-                  </p>
-                )}
+                <div className="flex flex-col md:flex-row gap-6 items-start">
+                  {product.image_url && (
+                    <img 
+                      src={product.image_url} 
+                      alt={product.name}
+                      className="w-32 h-32 object-contain rounded-lg border bg-white"
+                    />
+                  )}
+                  <div>
+                    <p className="text-3xl font-display font-bold text-primary mb-1">
+                      {product.name}
+                    </p>
+                    {product.scientific_formula && (
+                      <p className="text-lg text-muted-foreground mb-4">
+                        ({product.scientific_formula})
+                      </p>
+                    )}
+                  </div>
+                </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <div className="bg-secondary/50 p-4 rounded-lg">
