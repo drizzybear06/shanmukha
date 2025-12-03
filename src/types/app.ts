@@ -13,11 +13,13 @@ export interface Problem {
   title_te: string;
   title_hi: string;
   image_url?: string;
+  problem_type?: string;
+  description?: string;
 }
 
 export interface Product {
   id: string;
-  crop_id: string;
+  crop_id?: string;
   problem_id: string;
   name: string;
   dosage_recommendation: string;
@@ -28,6 +30,11 @@ export interface Product {
   spray_interval?: string;
   safety_notes?: string;
   image_url?: string;
+  product_type?: string;
+  scientific_formula?: string;
+  description?: string;
+  mode_of_action?: string;
+  features?: string[];
 }
 
 export interface TreatmentData {
@@ -37,4 +44,17 @@ export interface TreatmentData {
   acres: number;
   totalDosageMin: number;
   totalDosageMax: number;
+}
+
+export interface ProductProblem {
+  id: string;
+  product_id: string;
+  problem_id: string;
+  dosage_for_problem?: string;
+}
+
+export interface CropProblem {
+  id: string;
+  crop_id: string;
+  problem_id: string;
 }

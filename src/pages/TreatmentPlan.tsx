@@ -8,6 +8,7 @@ import jsPDF from 'jspdf';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
+import { HomeButton } from '@/components/HomeButton';
 
 const TreatmentPlan = () => {
   const { language, t } = useLanguage();
@@ -162,7 +163,7 @@ const TreatmentPlan = () => {
     return problem.title_en;
   };
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     try {
       const doc = new jsPDF();
       
@@ -182,9 +183,28 @@ const TreatmentPlan = () => {
       doc.text(`Crop: ${getCropName(crop)}`, 20, y);
       y += 10;
       doc.text(`Problem: ${getProblemTitle(problem)}`, 20, y);
+      y += 15;
+      
+      // Product with scientific formula
+      doc.setFontSize(14);
+      doc.setTextColor(34, 139, 34);
+      doc.text('Product Information', 20, y);
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
       y += 10;
-      doc.text(`Product: ${product.name}`, 20, y);
+      
+      const productDisplay = product.scientific_formula 
+        ? `${product.name} (${product.scientific_formula})`
+        : product.name;
+      doc.text(`Product: ${productDisplay}`, 20, y);
       y += 10;
+      
+      if (product.mode_of_action) {
+        const modeLines = doc.splitTextToSize(`Mode of Action: ${product.mode_of_action}`, 170);
+        doc.text(modeLines, 20, y);
+        y += modeLines.length * 6 + 5;
+      }
+      
       doc.text(`Number of Acres: ${acres}`, 20, y);
       y += 15;
       
@@ -293,7 +313,8 @@ _Powered by Shanmukha Agritech_
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10">
-      <div className="container mx-auto px-4 py-8">
+      <HomeButton />
+      <div className="container mx-auto px-4 py-8 pt-16">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8 animate-fade-in">
             <FileCheck className="w-20 h-20 text-primary mx-auto mb-4" />
@@ -323,9 +344,14 @@ _Powered by Shanmukha Agritech_
                 <h3 className="text-sm font-semibold text-muted-foreground mb-1">
                   {t('product')}
                 </h3>
-                <p className="text-3xl font-display font-bold text-primary mb-4">
+                <p className="text-3xl font-display font-bold text-primary mb-1">
                   {product.name}
                 </p>
+                {product.scientific_formula && (
+                  <p className="text-lg text-muted-foreground mb-4">
+                    ({product.scientific_formula})
+                  </p>
+                )}
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <div className="bg-secondary/50 p-4 rounded-lg">

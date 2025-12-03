@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Bug } from 'lucide-react';
 import { Problem, Crop } from '@/types/app';
 import { toast } from 'sonner';
+import { HomeButton } from '@/components/HomeButton';
 
 const ProblemSelection = () => {
   const { language, t } = useLanguage();
@@ -56,11 +57,12 @@ const ProblemSelection = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10">
-      <div className="container mx-auto px-4 py-8">
+      <HomeButton />
+      <div className="container mx-auto px-4 py-8 pt-16">
         <Button
           variant="outline"
           onClick={() => navigate('/crops')}
-          className="mb-6"
+          className="mb-6 ml-20"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('selectCrop')}
