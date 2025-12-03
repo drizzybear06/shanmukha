@@ -66,6 +66,42 @@ export type Database = {
           },
         ]
       }
+      crop_problems: {
+        Row: {
+          created_at: string | null
+          crop_id: string
+          id: string
+          problem_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          crop_id: string
+          id?: string
+          problem_id: string
+        }
+        Update: {
+          created_at?: string | null
+          crop_id?: string
+          id?: string
+          problem_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crop_problems_crop_id_fkey"
+            columns: ["crop_id"]
+            isOneToOne: false
+            referencedRelation: "crops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crop_problems_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crops: {
         Row: {
           created_at: string | null
@@ -97,8 +133,10 @@ export type Database = {
         Row: {
           created_at: string | null
           crop_id: string
+          description: string | null
           id: string
           image_url: string | null
+          problem_type: string | null
           title_en: string
           title_hi: string
           title_te: string
@@ -106,8 +144,10 @@ export type Database = {
         Insert: {
           created_at?: string | null
           crop_id: string
+          description?: string | null
           id?: string
           image_url?: string | null
+          problem_type?: string | null
           title_en: string
           title_hi: string
           title_te: string
@@ -115,8 +155,10 @@ export type Database = {
         Update: {
           created_at?: string | null
           crop_id?: string
+          description?: string | null
           id?: string
           image_url?: string | null
+          problem_type?: string | null
           title_en?: string
           title_hi?: string
           title_te?: string
@@ -131,50 +173,104 @@ export type Database = {
           },
         ]
       }
+      product_problems: {
+        Row: {
+          created_at: string | null
+          dosage_for_problem: string | null
+          id: string
+          problem_id: string
+          product_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          dosage_for_problem?: string | null
+          id?: string
+          problem_id: string
+          product_id: string
+        }
+        Update: {
+          created_at?: string | null
+          dosage_for_problem?: string | null
+          id?: string
+          problem_id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_problems_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_problems_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           created_at: string | null
           crop_id: string | null
+          description: string | null
           dosage_max: number
           dosage_min: number
           dosage_recommendation: string
           dosage_unit: string
+          features: string[] | null
           id: string
           image_url: string | null
+          mode_of_action: string | null
           name: string
           pack_sizes: string[]
           problem_id: string
+          product_type: string | null
           safety_notes: string | null
+          scientific_formula: string | null
           spray_interval: string | null
         }
         Insert: {
           created_at?: string | null
           crop_id?: string | null
+          description?: string | null
           dosage_max: number
           dosage_min: number
           dosage_recommendation: string
           dosage_unit?: string
+          features?: string[] | null
           id?: string
           image_url?: string | null
+          mode_of_action?: string | null
           name: string
           pack_sizes: string[]
           problem_id: string
+          product_type?: string | null
           safety_notes?: string | null
+          scientific_formula?: string | null
           spray_interval?: string | null
         }
         Update: {
           created_at?: string | null
           crop_id?: string | null
+          description?: string | null
           dosage_max?: number
           dosage_min?: number
           dosage_recommendation?: string
           dosage_unit?: string
+          features?: string[] | null
           id?: string
           image_url?: string | null
+          mode_of_action?: string | null
           name?: string
           pack_sizes?: string[]
           problem_id?: string
+          product_type?: string | null
           safety_notes?: string | null
+          scientific_formula?: string | null
           spray_interval?: string | null
         }
         Relationships: [

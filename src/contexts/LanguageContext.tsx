@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Language = 'en' | 'te' | 'hi';
 
@@ -41,6 +41,13 @@ const translations = {
     shareWhatsApp: 'Share on WhatsApp',
     backToHome: 'Back to Home',
     select: 'Select',
+    home: 'Home',
+    scientificFormula: 'Scientific Formula',
+    modeOfAction: 'Mode of Action',
+    features: 'Features',
+    targetPests: 'Target Pests',
+    targetDiseases: 'Target Diseases',
+    targetWeeds: 'Target Weeds',
   },
   te: {
     appTitle: 'షణ్ముఖ అగ్రిటెక్',
@@ -74,6 +81,13 @@ const translations = {
     shareWhatsApp: 'వాట్సాప్‌లో షేర్ చేయండి',
     backToHome: 'హోమ్‌కు తిరిగి వెళ్లండి',
     select: 'ఎంచుకోండి',
+    home: 'హోమ్',
+    scientificFormula: 'శాస్త్రీయ సూత్రం',
+    modeOfAction: 'పని విధానం',
+    features: 'లక్షణాలు',
+    targetPests: 'లక్ష్య తెగుళ్ళు',
+    targetDiseases: 'లక్ష్య వ్యాధులు',
+    targetWeeds: 'లక్ష్య కలుపు మొక్కలు',
   },
   hi: {
     appTitle: 'शनमुख एग्रीटेक',
@@ -107,13 +121,37 @@ const translations = {
     shareWhatsApp: 'व्हाट्सएप पर शेयर करें',
     backToHome: 'होम पर वापस',
     select: 'चुनें',
+    home: 'होम',
+    scientificFormula: 'वैज्ञानिक सूत्र',
+    modeOfAction: 'क्रिया विधि',
+    features: 'विशेषताएं',
+    targetPests: 'लक्ष्य कीट',
+    targetDiseases: 'लक्ष्य रोग',
+    targetWeeds: 'लक्ष्य खरपतवार',
   },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguageState] = useState<Language>(() => {
+    // Initialize from localStorage if available
+    const saved = localStorage.getItem('shanmukha-language');
+    return (saved as Language) || 'en';
+  });
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem('shanmukha-language', lang);
+  };
+
+  // Sync with localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('shanmukha-language');
+    if (saved && ['en', 'te', 'hi'].includes(saved)) {
+      setLanguageState(saved as Language);
+    }
+  }, []);
 
   const t = (key: string): string => {
     return translations[language][key as keyof typeof translations.en] || key;

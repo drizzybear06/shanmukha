@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft, Package, Calculator } from 'lucide-react';
 import { Product, Problem, Crop } from '@/types/app';
 import { toast } from 'sonner';
+import { HomeButton } from '@/components/HomeButton';
 import {
   Dialog,
   DialogContent,
@@ -101,11 +102,12 @@ const ProductRecommendation = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10">
-      <div className="container mx-auto px-4 py-8">
+      <HomeButton />
+      <div className="container mx-auto px-4 py-8 pt-16">
         <Button
           variant="outline"
           onClick={() => navigate(-1)}
-          className="mb-6"
+          className="mb-6 ml-20"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('selectProblem')}
@@ -141,9 +143,22 @@ const ProductRecommendation = () => {
                     </div>
                   )}
                   
-                  <h3 className="text-2xl font-display font-bold">{product.name}</h3>
+                  <h3 className="text-2xl font-display font-bold">
+                    {product.name}
+                    {product.scientific_formula && (
+                      <span className="text-sm font-normal text-muted-foreground block">
+                        ({product.scientific_formula})
+                      </span>
+                    )}
+                  </h3>
                   
                   <div className="space-y-2 text-sm">
+                    {product.mode_of_action && (
+                      <p>
+                        <span className="font-semibold">{t('modeOfAction')}:</span>{' '}
+                        {product.mode_of_action}
+                      </p>
+                    )}
                     <p>
                       <span className="font-semibold">{t('dosagePerAcre')}:</span>{' '}
                       {product.dosage_recommendation}
