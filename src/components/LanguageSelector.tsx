@@ -1,19 +1,15 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
+import { useNavigate } from 'react-router-dom';
 
-interface LanguageSelectorProps {
-  onLanguageSelected?: () => void;
-}
-
-export const LanguageSelector = ({ onLanguageSelected }: LanguageSelectorProps) => {
+export const LanguageSelector = () => {
   const { setLanguage, t } = useLanguage();
+  const navigate = useNavigate();
 
   const handleLanguageSelect = (code: 'en' | 'te' | 'hi') => {
     setLanguage(code);
-    if (onLanguageSelected) {
-      onLanguageSelected();
-    }
+    navigate('/crops');
   };
 
   const languages = [
