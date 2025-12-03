@@ -8,7 +8,6 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { useState } from "react";
-import Home from "./pages/Home";
 import About from "./pages/About";
 import CropSelection from "./pages/CropSelection";
 import ProblemSelection from "./pages/ProblemSelection";
@@ -22,8 +21,6 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [languageSelected, setLanguageSelected] = useState(false);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -32,37 +29,33 @@ const App = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              {!languageSelected ? (
-                <LanguageSelector onLanguageSelected={() => setLanguageSelected(true)} />
-              ) : (
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/crops" element={<CropSelection />} />
-                  <Route path="/problems/:cropId" element={<ProblemSelection />} />
-                  <Route path="/products/:problemId" element={<ProductRecommendation />} />
-                  <Route path="/treatment-plan" element={<TreatmentPlan />} />
-                  <Route path="/login/:role" element={<Login />} />
-                  <Route
-                    path="/admin/dashboard"
-                    element={
-                      <ProtectedRoute requiredRole="admin">
-                        <AdminDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/manager/dashboard"
-                    element={
-                      <ProtectedRoute requiredRole="manager">
-                        <ManagerDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              )}
+              <Routes>
+                <Route path="/" element={<LanguageSelector />} />
+                <Route path="/home" element={<LanguageSelector />} />
+                <Route path="/crops" element={<CropSelection />} />
+                <Route path="/problems/:cropId" element={<ProblemSelection />} />
+                <Route path="/products/:problemId" element={<ProductRecommendation />} />
+                <Route path="/treatment-plan" element={<TreatmentPlan />} />
+                <Route path="/login/:role" element={<Login />} />
+                <Route path="/about" element={<About />} />
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <ProtectedRoute requiredRole="admin">
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/manager/dashboard"
+                  element={
+                    <ProtectedRoute requiredRole="manager">
+                      <ManagerDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </BrowserRouter>
           </AuthProvider>
         </LanguageProvider>
