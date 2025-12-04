@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Sprout, FileText, LogIn, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import { HomeButton } from '@/components/HomeButton';
 
 const Home = () => {
   const { t } = useLanguage();
@@ -11,10 +11,11 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10">
-      <div className="container mx-auto px-4 py-12">
+      <HomeButton />
+      <div className="container mx-auto px-4 py-12 pt-20">
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold text-gradient-primary mb-3 break-words px-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-gradient-primary mb-3 break-words px-4 leading-tight pb-2">
             {t('appTitle')}
           </h1>
         </div>
