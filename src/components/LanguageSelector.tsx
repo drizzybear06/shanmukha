@@ -9,7 +9,7 @@ export const LanguageSelector = () => {
 
   const handleLanguageSelect = (code: 'en' | 'te' | 'hi') => {
     setLanguage(code);
-    navigate('/crops');
+    navigate('/home');
   };
 
   const languages = [
@@ -22,8 +22,8 @@ export const LanguageSelector = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10 flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl p-8 md:p-12 shadow-agricultural animate-fade-in">
         <div className="flex flex-col items-center gap-8">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl md:text-5xl font-display font-bold text-gradient-primary">
+          <div className="text-center space-y-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-gradient-primary leading-tight pb-2">
               {t('appTitle')}
             </h1>
             <p className="text-xl text-muted-foreground">{t('selectLanguage')}</p>

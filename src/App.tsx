@@ -7,7 +7,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { useState } from "react";
+import Home from "./pages/Home";
 import About from "./pages/About";
 import CropSelection from "./pages/CropSelection";
 import ProblemSelection from "./pages/ProblemSelection";
@@ -30,13 +30,14 @@ const App = () => {
             <Sonner />
             <BrowserRouter>
               <Routes>
+                {/* Navigation: Language Selection → Home → Login → Crops → Problems → Products → Treatment */}
                 <Route path="/" element={<LanguageSelector />} />
-                <Route path="/home" element={<LanguageSelector />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/login/:role" element={<Login />} />
                 <Route path="/crops" element={<CropSelection />} />
                 <Route path="/problems/:cropId" element={<ProblemSelection />} />
                 <Route path="/products/:problemId" element={<ProductRecommendation />} />
                 <Route path="/treatment-plan" element={<TreatmentPlan />} />
-                <Route path="/login/:role" element={<Login />} />
                 <Route path="/about" element={<About />} />
                 <Route
                   path="/admin/dashboard"
