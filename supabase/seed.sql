@@ -54,7 +54,9 @@ INSERT INTO crops (id, name_en, name_te, name_hi) VALUES
 ('f24d889d-e7b7-4dc5-ab07-d572fe3fd9e3', 'Tea', 'టీ', 'चाय'),
 ('71ebad91-5160-4e11-b8ec-287d6c366dc2', 'Coffee', 'కాఫీ', 'कॉफी'),
 ('8737adb1-cb5a-490d-926e-38daf8c45ee5', 'Cardamom', 'ఏలకులు', 'इलायची'),
-('27200c49-ff31-4548-807f-86eca3708605', 'Turmeric', 'పసుపు', 'हल्दी');
+('27200c49-ff31-4548-807f-86eca3708605', 'Turmeric', 'పసుపు', 'हल्दी'),
+('99999999-aaaa-bbbb-cccc-111111111111', 'Mustard', 'ఆవాలు', 'सरसों');
+
 
 -- ==================== PROBLEMS (115 total) ====================
 -- Paddy Problems
@@ -153,214 +155,931 @@ INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type) VALUE
 ('Thrips', 'తామర పురుగులు', 'थ్रిప్స', '8737adb1-cb5a-490d-926e-38daf8c45ee5', 'pest'),
 -- Sunflower Problems
 ('Head Borer', 'తల తొలుచు పురుగు', 'सिर छेदक', 'ec78d86d-3d6a-4403-ab48-69dffd9cff12', 'pest');
+-- ==================== MISSING PROBLEMS FROM WORD DOCS ====================
+
+-- Paddy extra pests
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Green Leaf Hopper', 'ఆకుపచ్చ తేమ పురుగు', 'हरा फुदका', c.id, 'pest'
+FROM crops c WHERE c.name_en='Paddy';
+
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'White Backed Plant Hopper', 'వెన్నెల దోమ', 'सफेद फुदका', c.id, 'pest'
+FROM crops c WHERE c.name_en='Paddy';
+
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Rice Hispa', 'ఆకు చీల్చు పురుగు', 'राइस हिस्पा', c.id, 'pest'
+FROM crops c WHERE c.name_en='Paddy';
+
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Thrips', 'తామర పురుగు', 'थ्रिप्स', c.id, 'pest'
+FROM crops c WHERE c.name_en='Paddy';
+
+-- Cotton missing
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Pink Bollworm', 'గులాబీ కాయతొలుచు పురుగు', 'गुलाबी सुंडी', c.id, 'pest'
+FROM crops c WHERE c.name_en='Cotton';
+
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Spotted Bollworm', 'మచ్చల కాయతొలుచు పురుగు', 'चित्तीदार सुंडी', c.id, 'pest'
+FROM crops c WHERE c.name_en='Cotton';
+
+-- Tomato missing
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Red Spider Mite', 'ఎర్ర సాలె పురుగు', 'लाल मकड़ी', c.id, 'pest'
+FROM crops c WHERE c.name_en='Tomato';
+
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Leaf Miner', 'ఆకు త్రవ్వు పురుగు', 'लीफ माइनर', c.id, 'pest'
+FROM crops c WHERE c.name_en='Tomato';
+
+-- Groundnut missing
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Leaf Miner', 'ఆకు త్రవ్వు పురుగు', 'लीफ माइनर', c.id, 'pest'
+FROM crops c WHERE c.name_en='Groundnut';
+
+-- Chilli missing diseases
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Powdery Mildew', 'బూడిద తెగులు', 'पाउडरी मिल्ड्यू', c.id, 'disease'
+FROM crops c WHERE c.name_en='Chilli';
+
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Die Back', 'డై బ్యాక్', 'डाइ बैक', c.id, 'disease'
+FROM crops c WHERE c.name_en='Chilli';
+
+-- Onion missing
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Stemphylium Blight', 'స్టెమ్ ఫిలియం తెగులు', 'स्टेम्फिलियम ब्लाइट', c.id, 'disease'
+FROM crops c WHERE c.name_en='Onion';
+
+-- Cucumber missing
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Powdery Mildew', 'బూడిద తెగులు', 'पाउडरी मिल्ड्यू', c.id, 'disease'
+FROM crops c WHERE c.name_en='Cucumber';
+
+-- Watermelon missing
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Downy Mildew', 'బూజు తెగులు', 'डाउनी मिल्ड्यू', c.id, 'disease'
+FROM crops c WHERE c.name_en='Watermelon';
+
+-- Banana missing
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Sigatoka Leaf Spot', 'సిగటోకా ఆకుమచ్చ', 'सिगाटोका पत्ती धब्बा', c.id, 'disease'
+FROM crops c WHERE c.name_en='Banana';
+
+-- Mustard missing
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'White Rust', 'తెల్ల తుప్పు తెగులు', 'सफेद रतुआ', c.id, 'disease'
+FROM crops c WHERE c.name_en='Mustard';
+
+-- Wheat Rust
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Rust', 'తుప్పు తెగులు', 'रतुआ', id, 'disease'
+FROM crops WHERE name_en='Wheat';
+
+-- Groundnut Leaf Spot
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Leaf Spot', 'ఆకు మచ్చ తెగులు', 'पत्ती धब्बा', id, 'disease'
+FROM crops WHERE name_en='Groundnut';
+
+-- Bhendi Whitefly (used in Megasus)
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Whitefly', 'తెల్ల దోమ', 'सफेद मक्खी', id, 'pest'
+FROM crops WHERE name_en='Bhendi';
+
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Powdery Mildew', 'బూడిద తెగులు', 'पाउडरी मिल्ड्यू', id, 'disease'
+FROM crops WHERE name_en='Mango';
+
+
+INSERT INTO problems (title_en, title_te, title_hi, crop_id, problem_type)
+SELECT 'Weeds', 'కలుపు మొక్కలు', 'खरपतवार', id, 'weed'
+FROM crops WHERE name_en='Potato';
+
 
 -- ==================== PRODUCTS (60+ total) ====================
--- Paddy Insecticides
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Dhanraja', 'Chlorantraniliprole 0.4% GR', 'insecticide', '4 kg/acre', 4, 4, 'kg', ARRAY['4 kg'], '15-20 days', 'Apply in standing water', 'Ryanodine receptor modulator', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Paddy' AND p.title_en='Stem Borer' AND p.crop_id=c.id;
+--- ==================== PRODUCTS (Shanmukha – CLEAN MAPPING) ====================
+-- NOTE:
+-- 1) Keep your CROPS and PROBLEMS inserts exactly as in your current seed.sql.
+-- 2) Delete or comment out the OLD PRODUCTS block completely.
+-- 3) Then paste this whole PRODUCTS block.
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Dobermin', 'Chlorantraniliprole 18.5% SC', 'insecticide', '60 ml/acre', 60, 60, 'ml', ARRAY['100 ml', '250 ml'], '15-20 days', 'Do not mix with alkaline pesticides', 'Ryanodine receptor modulator', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Paddy' AND p.title_en='Stem Borer' AND p.crop_id=c.id;
+-- ========== INSECTICIDES ==========
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Dhanzyme Gold', 'Thiamethoxam 25% WG', 'insecticide', '100 gm/acre', 100, 100, 'gm', ARRAY['100 gm', '250 gm'], '15-20 days', 'Safe for beneficial insects', 'Nicotinic acetylcholine receptor agonist', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Paddy' AND p.title_en='BPH (Brown Plant Hopper)' AND p.crop_id=c.id;
+-- Niwesh – Imidacloprid 30.5% SC (Rice, Cotton)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Niwesh', 'Imidacloprid 30.5% SC', 'insecticide',
+       '60–80 ml/acre', 60, 80, 'ml',
+       ARRAY['100 ml', '250 ml', '500 ml', '1 L'],
+       '10–15 days',
+       'Avoid spraying during peak bee activity.',
+       'Neonicotinoid; acts on nicotinic acetylcholine receptors.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='BPH (Brown Plant Hopper)';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Dhanprid', 'Imidacloprid 17.8% SL', 'insecticide', '100 ml/acre', 100, 100, 'ml', ARRAY['100 ml', '250 ml', '500 ml', '1 L'], '15-20 days', 'Toxic to bees', 'Nicotinic acetylcholine receptor agonist', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Paddy' AND p.title_en='BPH (Brown Plant Hopper)' AND p.crop_id=c.id;
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Niwesh', 'Imidacloprid 30.5% SC', 'insecticide',
+       '50–60 ml/acre', 50, 60, 'ml',
+       ARRAY['100 ml', '250 ml', '500 ml'],
+       '10–15 days',
+       'Target sucking pests only; do not exceed recommended dose.',
+       'Neonicotinoid; systemic and contact action.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Cotton' AND p.crop_id=c.id AND p.title_en='Aphids';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Dhanpreet', 'Acephate 75% SP', 'insecticide', '400 gm/acre', 400, 400, 'gm', ARRAY['100 gm', '250 gm', '500 gm', '1 kg'], '15-20 days', 'Wear protective equipment', 'Acetylcholinesterase inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Paddy' AND p.title_en='Leaf Folder' AND p.crop_id=c.id;
 
--- Paddy Fungicides
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Dhanustin', 'Carbendazim 50% WP', 'fungicide', '200 gm/acre', 200, 200, 'gm', ARRAY['100 gm', '250 gm', '500 gm'], '10-15 days', 'Compatible with most pesticides', 'Mitosis inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Paddy' AND p.title_en='Sheath Blight' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Amistar', 'Azoxystrobin 23% SC', 'fungicide', '200 ml/acre', 200, 200, 'ml', ARRAY['100 ml', '200 ml', '500 ml'], '10-15 days', 'Broad spectrum systemic', 'QoI fungicide', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Paddy' AND p.title_en='Sheath Blight' AND p.crop_id=c.id;
+-- Shanthoxam – Thiamethoxam 25% WG (Paddy)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Shanthoxam', 'Thiamethoxam 25% WG', 'insecticide',
+       '40–80 g/acre', 40, 80, 'gm',
+       ARRAY['40 gm', '100 gm', '250 gm'],
+       '10–15 days',
+       'Do not mix with strong alkaline products.',
+       'Neonicotinoid; systemic insecticide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='BPH (Brown Plant Hopper)';
 
--- Paddy Herbicides
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Shanmix', '2,4-D Sodium Salt 80% WP', 'herbicide', '250 gm/acre', 250, 250, 'gm', ARRAY['100 gm', '250 gm', '500 gm'], 'Pre-emergence', 'Avoid spray drift', 'Synthetic auxin', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Paddy' AND p.title_en='Weeds' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Nominee Gold', 'Bispyribac Sodium 10% SC', 'herbicide', '100 ml/acre', 100, 100, 'ml', ARRAY['50 ml', '100 ml', '250 ml'], 'Post-emergence', 'Apply 15-25 DAT', 'ALS inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Paddy' AND p.title_en='Weeds' AND p.crop_id=c.id;
 
--- Cotton Insecticides
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Dhanuka Lancer Gold', 'Acephate 50% + Imidacloprid 1.8% SP', 'insecticide', '400 gm/acre', 400, 400, 'gm', ARRAY['100 gm', '250 gm', '500 gm', '1 kg'], '15-20 days', 'Do not apply during hot hours', 'Dual mode of action', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Cotton' AND p.title_en='Jassids' AND p.crop_id=c.id;
+-- Ryz – Dinotefuran 20% SG (Paddy, Cotton)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Ryz', 'Dinotefuran 20% SG', 'insecticide',
+       '60–80 g/acre', 60, 80, 'gm',
+       ARRAY['60 gm', '120 gm', '250 gm'],
+       '10–15 days',
+       'Ensure uniform coverage on lower canopy.',
+       'Neonicotinoid with translaminar and systemic action.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='BPH (Brown Plant Hopper)';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Largo', 'Spinosad 45% SC', 'insecticide', '75 ml/acre', 75, 75, 'ml', ARRAY['75 ml', '150 ml'], '10-14 days', 'Derived from soil bacterium', 'Nicotinic acetylcholine receptor modulator', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Cotton' AND p.title_en='American Bollworm' AND p.crop_id=c.id;
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Ryz', 'Dinotefuran 20% SG', 'insecticide',
+       '60–80 g/acre', 60, 80, 'gm',
+       ARRAY['60 gm', '120 gm', '250 gm'],
+       '10–15 days',
+       'Controls major sucking pests in cotton.',
+       'Neonicotinoid; acts on nicotinic receptors.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Cotton' AND p.crop_id=c.id AND p.title_en='Whitefly';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'EM-1', 'Emamectin Benzoate 5% SG', 'insecticide', '80 gm/acre', 80, 80, 'gm', ARRAY['50 gm', '100 gm', '250 gm'], '10-15 days', 'Highly effective against bollworms', 'Chloride channel activator', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Cotton' AND p.title_en='American Bollworm' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Sempra', 'Novaluron 10% EC', 'insecticide', '300 ml/acre', 300, 300, 'ml', ARRAY['100 ml', '250 ml', '500 ml'], '15-20 days', 'Controls immature stages', 'Chitin synthesis inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Cotton' AND p.title_en='Whitefly' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Omite', 'Propargite 57% EC', 'insecticide', '400 ml/acre', 400, 400, 'ml', ARRAY['100 ml', '250 ml', '500 ml', '1 L'], '15-20 days', 'Specific to mites', 'Sulfite ester acaricide', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Cotton' AND p.title_en='Mites' AND p.crop_id=c.id;
+-- Dominator – Imidacloprid 17.8% SL (Paddy – BPH)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Dominator', 'Imidacloprid 17.8% SL', 'insecticide',
+       '60–80 ml/acre', 60, 80, 'ml',
+       ARRAY['100 ml', '250 ml', '500 ml', '1 L'],
+       '10–15 days',
+       'Avoid repeated use for resistance management.',
+       'Systemic neonicotinoid; root and foliar uptake.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='BPH (Brown Plant Hopper)';
 
--- Cotton Herbicides
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Tendulum Extra', 'Pendimethalin 30% EC', 'herbicide', '1-1.5 L/acre', 1000, 1500, 'ml', ARRAY['500 ml', '1 L', '5 L'], 'Pre-emergence', 'Apply on moist soil', 'Microtubule assembly inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Cotton' AND p.title_en='Weeds' AND p.crop_id=c.id;
 
--- Tomato Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Coragen', 'Chlorantraniliprole 18.5% SC', 'insecticide', '60 ml/acre', 60, 60, 'ml', ARRAY['30 ml', '60 ml', '150 ml'], '15-20 days', 'Highly effective, low toxicity', 'Anthranilic diamide', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Tomato' AND p.title_en='Fruit Borer' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Areva', 'Thiamethoxam 25% WG', 'insecticide', '80 gm/acre', 80, 80, 'gm', ARRAY['40 gm', '100 gm', '250 gm'], '15-20 days', 'Effective against whitefly', 'Neonicotinoid', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Tomato' AND p.title_en='Whitefly' AND p.crop_id=c.id;
+-- Dominator Ultra – Dinotefuran 15% + Pymetrozine 45% WG (Paddy hopper complex)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Dominator Ultra', 'Dinotefuran 15% + Pymetrozine 45% WG', 'insecticide',
+       '133.2 g/acre', 133, 133, 'gm',
+       ARRAY['133 gm', '250 gm'],
+       '10–15 days',
+       'Excellent on BPH, WBPH, GLH and ear head bug.',
+       'Combination of neonicotinoid + feeding blocker.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='BPH (Brown Plant Hopper)';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Kavach', 'Chlorothalonil 75% WP', 'fungicide', '400 gm/acre', 400, 400, 'gm', ARRAY['250 gm', '500 gm', '1 kg'], '10-15 days', 'Preventive fungicide', 'Multi-site contact', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Tomato' AND p.title_en='Early Blight' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Curzate M8', 'Cymoxanil 8% + Mancozeb 64% WP', 'fungicide', '500 gm/acre', 500, 500, 'gm', ARRAY['250 gm', '500 gm', '1 kg'], '7-10 days', 'Preventive and curative', 'Multi-site + systemic', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Tomato' AND p.title_en='Late Blight' AND p.crop_id=c.id;
 
--- Maize Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Ampligo', 'Chlorantraniliprole 9.3% + Lambda-cyhalothrin 4.6% ZC', 'insecticide', '80 ml/acre', 80, 80, 'ml', ARRAY['40 ml', '80 ml', '200 ml'], '10-15 days', 'Excellent for Fall Armyworm', 'Combination insecticide', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Maize' AND p.title_en='Fall Armyworm' AND p.crop_id=c.id;
+-- Polidar 4G – Cartap Hydrochloride 4% GR (Paddy borer & leaf folder)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Polidar 4G', 'Cartap Hydrochloride 4% GR', 'insecticide',
+       '7.5–10 kg/acre', 8, 10, 'kg',
+       ARRAY['4 kg', '10 kg'],
+       'Apply at 20–30 DAT',
+       'Broadcast in standing crop with shallow water.',
+       'Nereistoxin analogue; systemic and contact action.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='Stem Borer';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Delegate', 'Spinetoram 11.7% SC', 'insecticide', '100 ml/acre', 100, 100, 'ml', ARRAY['50 ml', '100 ml', '200 ml'], '10-14 days', 'Effective against FAW', 'Nicotinic receptor modulator', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Maize' AND p.title_en='Fall Armyworm' AND p.crop_id=c.id;
 
--- Grapes Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Rimon', 'Novaluron 10% EC', 'insecticide', '200 ml/acre', 200, 200, 'ml', ARRAY['100 ml', '250 ml', '500 ml'], '10-15 days', 'Safe for grape berries', 'Chitin synthesis inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Grapes' AND p.title_en='Thrips' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Confidor', 'Imidacloprid 17.8% SL', 'insecticide', '100 ml/acre', 100, 100, 'ml', ARRAY['50 ml', '100 ml', '250 ml'], '15-20 days', 'Effective for mealybug', 'Neonicotinoid', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Grapes' AND p.title_en='Mealybug' AND p.crop_id=c.id;
+-- Centra – Lambda Cyhalothrin 4.9% CS (several crops)
+-- Cotton – Bollworms
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Centra', 'Lambda Cyhalothrin 4.9% CS', 'insecticide',
+       '200 ml/acre', 200, 200, 'ml',
+       ARRAY['100 ml', '250 ml', '500 ml'],
+       '10–14 days',
+       'Avoid spraying during high winds.',
+       'Synthetic pyrethroid; contact and stomach action.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Cotton' AND p.crop_id=c.id AND p.title_en='American Bollworm';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Cabrio Top', 'Pyraclostrobin 5% + Metiram 55% WG', 'fungicide', '600 gm/acre', 600, 600, 'gm', ARRAY['300 gm', '600 gm', '1 kg'], '10-14 days', 'Broad spectrum protection', 'QoI + Multi-site', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Grapes' AND p.title_en='Downy Mildew' AND p.crop_id=c.id;
+-- Paddy – Stem Borer / Leaf Folder
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Centra', 'Lambda Cyhalothrin 4.9% CS', 'insecticide',
+       '100 ml/acre', 100, 100, 'ml',
+       ARRAY['100 ml', '250 ml', '500 ml'],
+       '10–14 days',
+       'Apply at early pest incidence.',
+       'Pyrethroid; quick knockdown.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='Stem Borer';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Custodia', 'Azoxystrobin 11% + Tebuconazole 18.3% SC', 'fungicide', '200 ml/acre', 200, 200, 'ml', ARRAY['100 ml', '250 ml', '500 ml'], '10-15 days', 'Preventive and curative', 'QoI + DMI', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Grapes' AND p.title_en='Anthracnose' AND p.crop_id=c.id;
+-- Tomato – Fruit Borer
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Centra', 'Lambda Cyhalothrin 4.9% CS', 'insecticide',
+       '120 ml/acre', 120, 120, 'ml',
+       ARRAY['100 ml', '250 ml', '500 ml'],
+       '10–14 days',
+       'Ensure coverage on flowers and developing fruits.',
+       'Pyrethroid insecticide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Tomato' AND p.crop_id=c.id AND p.title_en='Fruit Borer';
 
--- Mango Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Tatamida', 'Imidacloprid 17.8% SL', 'insecticide', '100 ml/acre', 100, 100, 'ml', ARRAY['100 ml', '250 ml', '500 ml'], '15-20 days', 'Apply during flowering', 'Neonicotinoid', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Mango' AND p.title_en='Hopper' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Karate', 'Lambda-cyhalothrin 5% EC', 'insecticide', '200 ml/acre', 200, 200, 'ml', ARRAY['100 ml', '250 ml', '500 ml', '1 L'], '15-20 days', 'Quick knockdown action', 'Sodium channel modulator', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Mango' AND p.title_en='Fruit Fly' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Bavistin', 'Carbendazim 50% WP', 'fungicide', '200 gm/acre', 200, 200, 'gm', ARRAY['100 gm', '250 gm', '500 gm'], '10-15 days', 'Effective against anthracnose', 'Mitosis inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Mango' AND p.title_en='Anthracnose' AND p.crop_id=c.id;
+-- Megasus – Diafenthiuron 50% WP (sucking complex & mites)
+-- Cotton – Whitefly (use existing problem title)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Megasus', 'Diafenthiuron 50% WP', 'insecticide',
+       '240 g/acre', 240, 240, 'gm',
+       ARRAY['240 gm', '480 gm', '1 kg'],
+       '10–14 days',
+       'Do not spray against strong winds; wear PPE.',
+       'Inhibits mitochondrial respiration in pests.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Cotton' AND p.crop_id=c.id AND p.title_en='Whitefly';
 
--- Potato Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Mancozeb', 'Mancozeb 75% WP', 'fungicide', '500 gm/acre', 500, 500, 'gm', ARRAY['250 gm', '500 gm', '1 kg'], '7-10 days', 'Multi-site contact fungicide', 'Multi-site contact', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Potato' AND p.title_en='Late Blight' AND p.crop_id=c.id;
+-- Cabbage – Diamond Back Moth
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Megasus', 'Diafenthiuron 50% WP', 'insecticide',
+       '240 g/acre', 240, 240, 'gm',
+       ARRAY['240 gm', '480 gm', '1 kg'],
+       '10–14 days',
+       'Rotate with different MOA to manage resistance.',
+       'Broad spectrum insecticide and acaricide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Cabbage' AND p.crop_id=c.id AND p.title_en='Diamond Back Moth';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Ridomil Gold', 'Metalaxyl 4% + Mancozeb 64% WP', 'fungicide', '500 gm/acre', 500, 500, 'gm', ARRAY['250 gm', '500 gm', '1 kg'], '10-15 days', 'Excellent for oomycete diseases', 'RNA polymerase inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Potato' AND p.title_en='Late Blight' AND p.crop_id=c.id;
+-- Okra – Whitefly
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Megasus', 'Diafenthiuron 50% WP', 'insecticide',
+       '240 g/acre', 240, 240, 'gm',
+       ARRAY['240 gm', '480 gm', '1 kg'],
+       '10–14 days',
+       'Excellent on whitefly and mites.',
+       'Diafenthiuron; contact & stomach action.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Bhendi' AND p.crop_id=c.id AND p.title_en='Whitefly';
 
--- Sugarcane Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Ferterra', 'Chlorantraniliprole 0.4% GR', 'insecticide', '4 kg/acre', 4, 4, 'kg', ARRAY['4 kg', '10 kg'], '30-45 days', 'Apply at planting', 'Ryanodine receptor modulator', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Sugarcane' AND p.title_en='Early Shoot Borer' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Regent', 'Fipronil 0.3% GR', 'insecticide', '8 kg/acre', 8, 8, 'kg', ARRAY['5 kg', '10 kg'], '30-45 days', 'Effective against root grubs', 'GABA receptor antagonist', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Sugarcane' AND p.title_en='Root Grub' AND p.crop_id=c.id;
 
--- Pomegranate Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Tracer', 'Spinosad 44.03% SC', 'insecticide', '75 ml/acre', 75, 75, 'ml', ARRAY['50 ml', '100 ml', '200 ml'], '10-14 days', 'IPM compatible', 'Nicotinic receptor modulator', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Pomegranate' AND p.title_en='Fruit Borer' AND p.crop_id=c.id;
+-- Uniisus – Diafenthiuron 47% + Bifenthrin 9.4% SC
+-- Cotton – Thrips
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Uniisus', 'Diafenthiuron 47% + Bifenthrin 9.4% SC', 'insecticide',
+       '250 ml/acre', 250, 250, 'ml',
+       ARRAY['250 ml', '500 ml', '1 L'],
+       '10–14 days',
+       'Strong knockdown on thrips and whitefly.',
+       'Combination of thiourea insecticide + pyrethroid.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Cotton' AND p.crop_id=c.id AND p.title_en='Thrips';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Streptocycline', 'Streptomycin Sulphate 90% + Tetracycline 10%', 'fungicide', '6 gm/15L water', 6, 6, 'gm', ARRAY['6 gm', '15 gm', '30 gm'], '10-15 days', 'Mix with copper fungicide', 'Antibiotic', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Pomegranate' AND p.title_en='Bacterial Blight' AND p.crop_id=c.id;
+-- Chilli – Thrips
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Uniisus', 'Diafenthiuron 47% + Bifenthrin 9.4% SC', 'insecticide',
+       '250 ml/acre', 250, 250, 'ml',
+       ARRAY['250 ml', '500 ml', '1 L'],
+       '10–14 days',
+       'Controls thrips and aphids in chilli.',
+       'Systemic & contact insecticide combination.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Chilli' AND p.crop_id=c.id AND p.title_en='Thrips';
 
--- Tea Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Pegasus', 'Diafenthiuron 50% WP', 'insecticide', '320 gm/acre', 320, 320, 'gm', ARRAY['100 gm', '250 gm', '500 gm'], '10-14 days', 'Effective against red spider mite', 'Mitochondrial ATP synthesis inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Tea' AND p.title_en='Red Spider Mite' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Tilt', 'Propiconazole 25% EC', 'fungicide', '200 ml/acre', 200, 200, 'ml', ARRAY['100 ml', '250 ml', '500 ml'], '10-15 days', 'Curative and protective', 'DMI fungicide', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Tea' AND p.title_en='Blister Blight' AND p.crop_id=c.id;
 
--- Citrus Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Kocide', 'Copper Hydroxide 53.8% DF', 'fungicide', '400 gm/acre', 400, 400, 'gm', ARRAY['200 gm', '500 gm', '1 kg'], '10-15 days', 'Protective action', 'Multi-site contact', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Citrus' AND p.title_en='Canker' AND p.crop_id=c.id;
+-- Tall Stroke Plus – Pyriproxyfen 10% + Bifenthrin 10% EC (Cotton Whitefly)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Tall Stroke Plus', 'Pyriproxyfen 10% + Bifenthrin 10% EC', 'insecticide',
+       '240 ml/acre', 240, 240, 'ml',
+       ARRAY['240 ml', '500 ml', '1 L'],
+       '10–14 days',
+       'Controls all stages of whitefly (egg, nymph, adult).',
+       'IGR + pyrethroid combination.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Cotton' AND p.crop_id=c.id AND p.title_en='Whitefly';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Aliette', 'Fosetyl-AL 80% WP', 'fungicide', '500 gm/acre', 500, 500, 'gm', ARRAY['250 gm', '500 gm', '1 kg'], '10-15 days', 'Upward and downward movement', 'Stimulates plant defense', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Citrus' AND p.title_en='Root Rot' AND p.crop_id=c.id;
 
--- Chilli Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Nagata', 'Fipronil 5% SC', 'insecticide', '400-600 ml/acre', 400, 600, 'ml', ARRAY['100 ml', '250 ml', '500 ml', '1 L'], '15-20 days', 'Broad spectrum', 'GABA receptor antagonist', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Chilli' AND p.title_en='Thrips' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Dhanucop', 'Copper Oxychloride 50% WP', 'fungicide', '500-600 gm/acre', 500, 600, 'gm', ARRAY['250 gm', '500 gm', '1 kg'], '10-15 days', 'Do not mix with lime', 'Multi-site contact', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Chilli' AND p.title_en='Anthracnose' AND p.crop_id=c.id;
+-- Neozen – Pyriproxyfen 5% + Diafenthiuron 25% SE (Cotton Whitefly/Jassids)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Neozen', 'Pyriproxyfen 5% + Diafenthiuron 25% SE', 'insecticide',
+       '200–240 ml/acre', 200, 240, 'ml',
+       ARRAY['200 ml', '500 ml', '1 L'],
+       '10–14 days',
+       'Best fit in whitefly management programs.',
+       'Combination of IGR and thiourea insecticide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Cotton' AND p.crop_id=c.id AND p.title_en='Whitefly';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Vitavax Power', 'Carboxin 37.5% + Thiram 37.5% WS', 'fungicide', '2 gm/kg seed', 2, 2, 'gm', ARRAY['100 gm', '250 gm'], 'Seed treatment', 'Treat seeds before sowing', 'Dual action fungicide', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Chilli' AND p.title_en='Damping Off' AND p.crop_id=c.id;
 
--- Brinjal Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Caldan', 'Cartap Hydrochloride 50% SP', 'insecticide', '400 gm/acre', 400, 400, 'gm', ARRAY['100 gm', '250 gm', '500 gm'], '10-15 days', 'Effective against borer', 'Nereistoxin analogue', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Brinjal' AND p.title_en='Shoot and Fruit Borer' AND p.crop_id=c.id;
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Fame', 'Flubendiamide 20% WG', 'insecticide', '50 gm/acre', 50, 50, 'gm', ARRAY['25 gm', '50 gm', '100 gm'], '15-20 days', 'Low toxicity to beneficials', 'Ryanodine receptor modulator', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Brinjal' AND p.title_en='Shoot and Fruit Borer' AND p.crop_id=c.id;
+-- Krushmite – Fenpyroximate 5% SC (mites)
+-- Tea – Red Spider Mite
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Krushmite', 'Fenpyroximate 5% SC', 'insecticide',
+       '240–480 ml/acre', 240, 480, 'ml',
+       ARRAY['250 ml', '500 ml', '1 L'],
+       '10–14 days',
+       'Acaricide; effective on multiple mite stages.',
+       'Mitochondrial electron transport inhibitor.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Tea' AND p.crop_id=c.id AND p.title_en='Red Spider Mite';
 
--- Cabbage Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Proclaim', 'Emamectin Benzoate 5% SG', 'insecticide', '80 gm/acre', 80, 80, 'gm', ARRAY['50 gm', '100 gm', '250 gm'], '10-15 days', 'Excellent for DBM', 'Chloride channel activator', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Cabbage' AND p.title_en='Diamond Back Moth' AND p.crop_id=c.id;
+-- Chilli – Mites
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Krushmite', 'Fenpyroximate 5% SC', 'insecticide',
+       '120–240 ml/acre', 120, 240, 'ml',
+       ARRAY['250 ml', '500 ml'],
+       '10–14 days',
+       'Specialist acaricide for chilli mites.',
+       'Contact acaricide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Chilli' AND p.crop_id=c.id AND p.title_en='Mites';
 
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Lorsban', 'Chlorpyrifos 20% EC', 'insecticide', '500 ml/acre', 500, 500, 'ml', ARRAY['250 ml', '500 ml', '1 L'], '15-20 days', 'Broad spectrum', 'Acetylcholinesterase inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Cabbage' AND p.title_en='Aphids' AND p.crop_id=c.id;
 
--- Wheat Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Buctril', 'Bromoxynil 27.7% EC', 'herbicide', '400 ml/acre', 400, 400, 'ml', ARRAY['200 ml', '500 ml', '1 L'], 'Post-emergence', 'Apply at 2-4 leaf stage', 'Photosystem II inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Wheat' AND p.title_en='Weeds' AND p.crop_id=c.id;
 
--- Soybean Products
-INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max, dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id) 
-SELECT 'Imazethapyr', 'Imazethapyr 10% SL', 'herbicide', '300 ml/acre', 300, 300, 'ml', ARRAY['100 ml', '250 ml', '500 ml'], 'Post-emergence', 'Apply 15-20 DAS', 'ALS inhibitor', c.id, p.id
-FROM crops c, problems p WHERE c.name_en='Soybean' AND p.title_en='Weeds' AND p.crop_id=c.id;
+-- Khlocyp – Chlorpyriphos 50% + Cypermethrin 5% EC (Cotton & Paddy)
+-- Cotton – complex of sucking + bollworms
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Khlocyp', 'Chlorpyriphos 50% + Cypermethrin 5% EC', 'insecticide',
+       '400 ml/acre', 400, 400, 'ml',
+       ARRAY['250 ml', '500 ml', '1 L'],
+       '10–15 days',
+       'Effective on aphids, thrips, jassids, whitefly and bollworms.',
+       'OP + pyrethroid combination.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Cotton' AND p.crop_id=c.id AND p.title_en='American Bollworm';
+
+-- Paddy – Stem Borer / Leaf Folder
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Khlocyp', 'Chlorpyriphos 50% + Cypermethrin 5% EC', 'insecticide',
+       '250–300 ml/acre', 250, 300, 'ml',
+       ARRAY['250 ml', '500 ml', '1 L'],
+       '10–15 days',
+       'Apply at early borer incidence.',
+       'Combination contact insecticide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='Stem Borer';
+
+
+
+-- Khlocyp Complete – Lambda Cyhalothrin 5% + Chlorantraniliprole 9.3% ZC (example mapping)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Khlocyp Complete', 'Lambda Cyhalothrin 5% + Chlorantraniliprole 9.3% ZC', 'insecticide',
+       '80–100 ml/acre', 80, 100, 'ml',
+       ARRAY['80 ml', '200 ml'],
+       '10–14 days',
+       'Broad spectrum against borer & sucking pests.',
+       'Diamide + pyrethroid combination.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Chilli' AND p.crop_id=c.id AND p.title_en='Fruit Borer';
+
+
+
+-- Telluride – Fipronil 80% WG (soil / early sucking pests)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Telluride', 'Fipronil 80% WG', 'insecticide',
+       '50–60 g/acre', 50, 60, 'gm',
+       ARRAY['40 gm', '80 gm'],
+       'Soil/root zone application',
+       'Use for nursery or early crop stage.',
+       'Phenyl pyrazole; GABA receptor blocker.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='Stem Borer';
+
+
+
+-- Telluride Ultra – Fipronil 4% + Imidacloprid 25% WG (Paddy hopper + borer)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Telluride Ultra', 'Fipronil 4% + Imidacloprid 25% WG', 'insecticide',
+       '400–500 g/acre', 400, 500, 'gm',
+       ARRAY['400 gm', '1 kg'],
+       '10–14 days',
+       'Controls BPH and stem borer together.',
+       'Combination of neonicotinoid + phenyl pyrazole.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='BPH (Brown Plant Hopper)';
+
+
+
+-- Bhadra Gold – Emamectin Benzoate 1.9% + Lambda Cyhalothrin 4.9% ZC (borer & caterpillars)
+-- Chilli – Fruit Borer
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Bhadra Gold', 'Emamectin Benzoate 1.9% + Lambda Cyhalothrin 4.9% ZC', 'insecticide',
+       '80–100 ml/acre', 80, 100, 'ml',
+       ARRAY['80 ml', '200 ml'],
+       '10–14 days',
+       'Excellent on fruit borers in chilli.',
+       'Avermectin + pyrethroid combo.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Chilli' AND p.crop_id=c.id AND p.title_en='Fruit Borer';
+
+-- Tomato – Fruit Borer
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Bhadra Gold', 'Emamectin Benzoate 1.9% + Lambda Cyhalothrin 4.9% ZC', 'insecticide',
+       '80–100 ml/acre', 80, 100, 'ml',
+       ARRAY['80 ml', '200 ml'],
+       '10–14 days',
+       'Gives quick knockdown and residual control.',
+       'Dual mode of action.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Tomato' AND p.crop_id=c.id AND p.title_en='Fruit Borer';
+
+
+
+-- Mammath – Chlorantraniliprole 18.5% SC (Fruit Borer complexes)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Mammath', 'Chlorantraniliprole 18.5% SC', 'insecticide',
+       '60 ml/acre', 60, 60, 'ml',
+       ARRAY['60 ml', '150 ml'],
+       '10–14 days',
+       'Highly effective on fruit borers with low mammalian toxicity.',
+       'Ryanodine receptor modulator.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Tomato' AND p.crop_id=c.id AND p.title_en='Fruit Borer';
+
+
+
+
+-- ========== FUNGICIDES ==========
+
+-- Helenaa – Hexaconazole 5% SC (Powdery Mildew – Grapes, Mango)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Helenaa', 'Hexaconazole 5% SC', 'fungicide',
+       '200 ml/acre', 200, 200, 'ml',
+       ARRAY['200 ml', '500 ml', '1 L'],
+       '10–15 days',
+       'Systemic triazole fungicide for powdery mildew.',
+       'DMI fungicide; sterol biosynthesis inhibitor.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Grapes' AND p.crop_id=c.id AND p.title_en='Powdery Mildew';
+
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Helenaa', 'Hexaconazole 5% SC', 'fungicide',
+       '200 ml/acre', 200, 200, 'ml',
+       ARRAY['200 ml', '500 ml', '1 L'],
+       '10–15 days',
+       'Use in mango orchards at disease onset.',
+       'Systemic fungicide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Mango' AND p.crop_id=c.id AND p.title_en='Powdery Mildew';
+
+
+
+-- Zebexyl – Mancozeb 63% + Hexaconazole 5% WP (Grapes – Downy/Powdery mix)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Zebexyl', 'Mancozeb 63% + Hexaconazole 5% WP', 'fungicide',
+       '400–500 g/acre', 400, 500, 'gm',
+       ARRAY['250 gm', '500 gm', '1 kg'],
+       '10–14 days',
+       'Provides both preventive and curative control.',
+       'Multi-site + DMI systemic action.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Grapes' AND p.crop_id=c.id AND p.title_en='Downy Mildew';
+
+
+
+-- Accute – Azoxystrobin 11% + Tebuconazole 18.3% SC (Tomato Early/Late Blight, Grapes)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Accute', 'Azoxystrobin 11% + Tebuconazole 18.3% SC', 'fungicide',
+       '200 ml/acre', 200, 200, 'ml',
+       ARRAY['100 ml', '250 ml', '500 ml'],
+       '10–14 days',
+       'Broad spectrum fungicide for foliar diseases.',
+       'QoI + DMI combination.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Tomato' AND p.crop_id=c.id AND p.title_en='Early Blight';
+
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Accute', 'Azoxystrobin 11% + Tebuconazole 18.3% SC', 'fungicide',
+       '200 ml/acre', 200, 200, 'ml',
+       ARRAY['100 ml', '250 ml', '500 ml'],
+       '10–14 days',
+       'Also effective against downy/powdery in grapes.',
+       'Systemic fungicide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Grapes' AND p.crop_id=c.id AND p.title_en='Anthracnose';
+
+
+
+-- Kornia – Propiconazole 25% EC (Rusts, Leaf Spots – Wheat, Groundnut, etc.)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Kornia', 'Propiconazole 25% EC', 'fungicide',
+       '200 ml/acre', 200, 200, 'ml',
+       ARRAY['100 ml', '250 ml', '500 ml'],
+       '10–15 days',
+       'Systemic fungicide; apply at first symptom.',
+       'DMI; sterol biosynthesis inhibitor.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Wheat' AND p.crop_id=c.id AND p.title_en='Rust';
+
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Kornia', 'Propiconazole 25% EC', 'fungicide',
+       '200 ml/acre', 200, 200, 'ml',
+       ARRAY['100 ml', '250 ml', '500 ml'],
+       '10–15 days',
+       'Good on leaf spot/tikka in groundnut.',
+       'Systemic; protective and curative.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Groundnut' AND p.crop_id=c.id AND p.title_en='Leaf Spot';
+
+
+
+-- Kornia Complete – Azoxystrobin 4.8% + Chlorothalonil 40% SC (Potato, Tomato)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Kornia Complete', 'Azoxystrobin 4.8% + Chlorothalonil 40% SC', 'fungicide',
+       '400–500 ml/acre', 400, 500, 'ml',
+       ARRAY['250 ml', '500 ml', '1 L'],
+       '7–10 days',
+       'Excellent for late blight management.',
+       'QoI + multi-site contact.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Potato' AND p.crop_id=c.id AND p.title_en='Late Blight';
+
+
+
+-- Qute – Metalaxyl 8% + Mancozeb 64% WP (Downy/Phytophthora)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Qute', 'Metalaxyl 8% + Mancozeb 64% WP', 'fungicide',
+       '400–500 g/acre', 400, 500, 'gm',
+       ARRAY['250 gm', '500 gm', '1 kg'],
+       '7–10 days',
+       'Use preventively against downy mildew.',
+       'Systemic + contact fungicide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Grapes' AND p.crop_id=c.id AND p.title_en='Downy Mildew';
+
+
+
+-- Extra Qute – Cymoxanil 8% + Mancozeb 64% WP (curative, e.g. Potato Late Blight)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Extra Qute', 'Cymoxanil 8% + Mancozeb 64% WP', 'fungicide',
+       '400–500 g/acre', 400, 500, 'gm',
+       ARRAY['250 gm', '500 gm', '1 kg'],
+       '7–10 days',
+       'Curative plus protective activity.',
+       'Locally systemic + contact.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Potato' AND p.crop_id=c.id AND p.title_en='Late Blight';
+
+
+
+-- Kavacham – Mancozeb 75% WP (broad contact protectant)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Kavacham', 'Mancozeb 75% WP', 'fungicide',
+       '500 g/acre', 500, 500, 'gm',
+       ARRAY['500 gm', '1 kg'],
+       '7–10 days',
+       'Multi-site protectant fungicide.',
+       'Multi-site contact.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Tomato' AND p.crop_id=c.id AND p.title_en='Early Blight';
+
+
+
+-- Shansulf – Sulphur 80% WDG (Powdery Mildew – multiple crops)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Shansulf', 'Sulphur 80% WDG', 'fungicide',
+       '600–800 g/acre', 600, 800, 'gm',
+       ARRAY['500 gm', '1 kg'],
+       '7–10 days',
+       'CONTACT fungicide and acaricide.',
+       'Multi-site; elemental sulphur.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Grapes' AND p.crop_id=c.id AND p.title_en='Powdery Mildew';
+
+
+
+-- ========== HERBICIDES ==========
+
+-- Designate – Pendimethalin 30% EC (Paddy/Cotton pre-emergence)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Designate', 'Pendimethalin 30% EC', 'herbicide',
+       '1.0–1.5 L/acre', 1000, 1500, 'ml',
+       ARRAY['500 ml', '1 L', '5 L'],
+       'Pre-emergence',
+       'Apply on moist soil within 2 days of sowing/transplanting.',
+       'Microtubule assembly inhibitor.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Cotton' AND p.crop_id=c.id AND p.title_en='Weeds';
+
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Designate', 'Pendimethalin 30% EC', 'herbicide',
+       '1.0–1.5 L/acre', 1000, 1500, 'ml',
+       ARRAY['500 ml', '1 L', '5 L'],
+       'Pre-emergence',
+       'Uniform spray – do not disturb soil after application.',
+       'Pre-emergence residual herbicide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='Weeds';
+
+
+
+-- Thrive – Bispyribac Sodium 10% SC (Paddy post-emergence)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Thrive', 'Bispyribac Sodium 10% SC', 'herbicide',
+       '80–100 ml/acre', 80, 100, 'ml',
+       ARRAY['80 ml', '100 ml', '250 ml'],
+       'Post-emergence (15–25 DAT)',
+       'Spray when weeds are 2–4 leaf stage.',
+       'ALS inhibitor.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy' AND p.crop_id=c.id AND p.title_en='Weeds';
+
+
+
+-- Weed Cure Gold – 2,4-D Amine Salt 58% SL (Broadleaf weeds)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Weed Cure Gold', '2,4-D Amine Salt 58% SL', 'herbicide',
+       '400–500 ml/acre', 400, 500, 'ml',
+       ARRAY['500 ml', '1 L'],
+       'Post-emergence',
+       'Avoid drift to sensitive crops.',
+       'Synthetic auxin herbicide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Wheat' AND p.crop_id=c.id AND p.title_en='Weeds';
+
+
+
+-- Aarka – Imazethapyr 10% SL (Soybean broad spectrum weeds)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Aarka', 'Imazethapyr 10% SL', 'herbicide',
+       '300 ml/acre', 300, 300, 'ml',
+       ARRAY['250 ml', '500 ml'],
+       'Early post-emergence',
+       'Apply 15–20 DAS on young weeds.',
+       'ALS inhibitor.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Soybean' AND p.crop_id=c.id AND p.title_en='Weeds';
+
+
+
+-- Landmine – Atrazine 50% WP (Maize, Sugarcane)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Landmine', 'Atrazine 50% WP', 'herbicide',
+       '800–1000 g/acre', 800, 1000, 'gm',
+       ARRAY['500 gm', '1 kg'],
+       'Pre-emergence',
+       'Light irrigation after application improves efficacy.',
+       'Photosystem II inhibitor.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Maize' AND p.crop_id=c.id AND p.title_en='Weeds';
+
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Landmine', 'Atrazine 50% WP', 'herbicide',
+       '800–1000 g/acre', 800, 1000, 'gm',
+       ARRAY['500 gm', '1 kg'],
+       'Pre-emergence',
+       'Controls major broadleaf and grassy weeds.',
+       'Residual herbicide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Sugarcane' AND p.crop_id=c.id AND p.title_en='Weeds';
+
+
+
+-- Taizen – Topramezone 33.6% SC (Maize post-emergence)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Taizen', 'Topramezone 33.6% SC', 'herbicide',
+       '50–70 ml/acre', 50, 70, 'ml',
+       ARRAY['50 ml', '100 ml'],
+       'Post-emergence',
+       'Target 2–4 leaf stage weeds for best results.',
+       'HPPD inhibitor herbicide.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Maize' AND p.crop_id=c.id AND p.title_en='Weeds';
+
+
+
+-- Bromett Plus – Metribuzin 70% WP (Potato, Sugarcane weeds)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Bromett Plus', 'Metribuzin 70% WP', 'herbicide',
+       '200–300 g/acre', 200, 300, 'gm',
+       ARRAY['250 gm', '500 gm'],
+       'Pre/post-emergence (as per label)',
+       'Selectivity may vary by soil type; do compatibility test.',
+       'Photosystem II inhibitor.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Potato' AND p.crop_id=c.id AND p.title_en='Weeds';
+
+
+
+-- ========== PLANT GROWTH REGULATORS (mapped to “Poor Fruit Set” where available) ==========
+
+-- Protonn – NAA + nutrients (Grapes poor fruit set)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Protonn', 'Plant Growth Regulator (NAA based)', 'pgr',
+       '1–2 ml/L (foliar spray)', 1, 2, 'ml',
+       ARRAY['100 ml', '250 ml'],
+       'At flowering / fruit set',
+       'Do not mix with strong alkaline products.',
+       'Auxin-based PGR; improves fruit set and retention.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Grapes' AND p.crop_id=c.id AND p.title_en='Poor Fruit Set';
+
+
+
+-- Laser – GA3 based PGR (also map to Grapes Poor Fruit Set)
+INSERT INTO products (name, scientific_formula, product_type, dosage_recommendation, dosage_min, dosage_max,
+                      dosage_unit, pack_sizes, spray_interval, safety_notes, mode_of_action, crop_id, problem_id)
+SELECT 'Laser', 'Plant Growth Regulator (GA₃ based)', 'pgr',
+       '0.5–1 ml/L (spray)', 1, 1, 'ml',
+       ARRAY['100 ml', '250 ml'],
+       'As per label at bunch development stage',
+       'Avoid overdosage; use during cool hours.',
+       'Gibberellin-based PGR; improves berry size.',
+       c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Grapes' AND p.crop_id=c.id AND p.title_en='Poor Fruit Set';
+
+-- ==================== PRODUCT MAPPINGS FOR NEW PROBLEMS ====================
+
+--- ==================== PRODUCT MAPPINGS FOR NEW PROBLEMS (FIXED) ====================
+
+-- Paddy → Green Leaf Hopper, White Backed Plant Hopper
+INSERT INTO products (
+name, scientific_formula, product_type,
+dosage_recommendation, dosage_min, dosage_max, dosage_unit,
+pack_sizes, spray_interval, safety_notes, mode_of_action,
+crop_id, problem_id
+)
+SELECT 'Shanthoxam', 'Thiamethoxam 25% WG', 'insecticide',
+'40 gm/acre', 40, 40, 'gm',
+ARRAY['40 gm'], '15 days',
+'Systemic neonicotinoid', 'Systemic action',
+c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Paddy'
+AND p.title_en IN ('Green Leaf Hopper','White Backed Plant Hopper');
+
+
+-- Chilli → Powdery Mildew
+INSERT INTO products (
+name, scientific_formula, product_type,
+dosage_recommendation, dosage_min, dosage_max, dosage_unit,
+pack_sizes, spray_interval, safety_notes, mode_of_action,
+crop_id, problem_id
+)
+SELECT 'Shansulf', 'Sulphur 80% WG', 'fungicide',
+'750 gm/acre', 750, 1000, 'gm',
+ARRAY['1 kg'], '10 days',
+'Contact fungicide', 'Multi-site',
+c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Chilli'
+AND p.title_en='Powdery Mildew';
+
+
+-- Onion → Stemphylium Blight
+INSERT INTO products (
+name, scientific_formula, product_type,
+dosage_recommendation, dosage_min, dosage_max, dosage_unit,
+pack_sizes, spray_interval, safety_notes, mode_of_action,
+crop_id, problem_id
+)
+SELECT 'Avventus',
+'Azoxystrobin 18.2% + Difenoconazole 11.4% SC',
+'fungicide',
+'40 ml/acre', 40, 40, 'ml',
+ARRAY['100 ml'], '12 days',
+'Systemic fungicide', 'Dual systemic',
+c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Onion'
+AND p.title_en='Stemphylium Blight';
+
+
+-- Banana → Sigatoka Leaf Spot
+INSERT INTO products (
+name, scientific_formula, product_type,
+dosage_recommendation, dosage_min, dosage_max, dosage_unit,
+pack_sizes, spray_interval, safety_notes, mode_of_action,
+crop_id, problem_id
+)
+SELECT 'Avventus',
+'Azoxystrobin 18.2% + Difenoconazole 11.4% SC',
+'fungicide',
+'40 ml/acre', 40, 40, 'ml',
+ARRAY['100 ml'], '12 days',
+'Systemic fungicide', 'Dual systemic',
+c.id, p.id
+FROM crops c, problems p
+WHERE c.name_en='Banana'
+AND p.title_en='Sigatoka Leaf Spot';
+
+
 
 -- Add indexes for performance
 CREATE INDEX IF NOT EXISTS idx_crops_name_en ON crops(name_en);
